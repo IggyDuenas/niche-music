@@ -2,7 +2,7 @@ import Link from "next/link";
 import { env } from "@/lib/env";
 import { readSession, type Session } from "@/lib/session";
 import { ConnectApple } from "@/components/ConnectApple";
-import { CoverArt } from "@/components/FigureGrid";
+import { FigureField } from "@/components/FigureGrid";
 import { Ground } from "@/components/Ground";
 import { COLORWAYS } from "@/lib/colorways";
 
@@ -24,75 +24,73 @@ export default async function Home({
 
   return (
     <Ground colorway={opening} cycle>
-    <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center px-6 pb-16 pt-12 text-center sm:pt-20">
-      <CoverArt className="w-full max-w-[340px]" />
+      <FigureField />
 
-      <h1 className="mt-9 text-balance text-[2.15rem] font-bold leading-[1.08] tracking-tight sm:text-[2.6rem]">
-        How niche is your music taste?
-      </h1>
-      <p className="mt-2 text-lg font-medium text-[var(--color-muted)]">
-        Spotify &amp; Apple Music
-      </p>
-      <p className="mt-2 text-[13px] font-semibold tracking-wide text-[var(--color-accent)]">
-        One playlist · Scored on {referenceSource}
-      </p>
-
-      {error && (
-        <p className="mt-6 w-full rounded-2xl border border-[var(--color-accent)]/45 bg-[var(--color-accent)]/12 px-4 py-3 text-sm">
-          {error}
+      <main className="relative flex min-h-dvh flex-col items-center justify-center px-5 py-14">
+        {/*
+         * The content sits on its own plate. Cream text laid straight onto the
+         * field is unreadable wherever a figure passes behind it, and the plate
+         * keeps every colourway legible without dimming the dancers.
+         */}
+        <div className="w-full max-w-md rounded-[2rem] sm:max-w-lg border border-[var(--color-cream)]/15 bg-black/55 px-7 py-10 text-center shadow-[0_30px_80px_-20px_rgba(0,0,0,0.75)] backdrop-blur-xl sm:px-10">
+        <h1 className="text-balance text-[2.5rem] font-bold leading-[1.05] tracking-tight sm:text-5xl">
+          How niche is your music?
+        </h1>
+        <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-cream)]/85">
+          Pick a playlist and find out how many people on earth actually listen to it.
         </p>
-      )}
 
-      <div className="mt-8 flex w-full flex-col items-stretch gap-3">
-        {spotifyConnected ? (
-          <Link href="/playlists?source=spotify" className={primaryPill}>
-            <PlayMark />
-            Pick a playlist
-          </Link>
-        ) : (
-          <a
-            href={env.spotify.configured ? "/api/auth/spotify/login" : undefined}
-            aria-disabled={!env.spotify.configured}
-            className={`${primaryPill} ${env.spotify.configured ? "" : "pointer-events-none opacity-40"}`}
-          >
-            <SpotifyMark />
-            Connect Spotify
-          </a>
+        {error && (
+          <p className="mt-6 w-full rounded-2xl border border-[var(--color-cream)]/30 bg-black/35 px-4 py-3 text-sm backdrop-blur-sm">
+            {error}
+          </p>
         )}
 
-        <ConnectApple enabled={env.apple.configured} />
-      </div>
+        <div className="mt-8 flex w-full flex-col items-stretch gap-3">
+          {spotifyConnected ? (
+            <Link href="/playlists?source=spotify" className={primaryPill}>
+              <PlayMark />
+              Pick a playlist
+            </Link>
+          ) : (
+            <a
+              href={env.spotify.configured ? "/api/auth/spotify/login" : undefined}
+              aria-disabled={!env.spotify.configured}
+              className={`${primaryPill} ${env.spotify.configured ? "" : "pointer-events-none opacity-45"}`}
+            >
+              <SpotifyMark />
+              Connect Spotify
+            </a>
+          )}
 
-      {spotifyConnected && session.spotify?.displayName && (
-        <p className="mt-4 text-xs text-[var(--color-muted)]">
-          Connected as {session.spotify.displayName}
-        </p>
-      )}
-      {!env.spotify.configured && (
-        <p className="mt-4 text-xs leading-relaxed text-[var(--color-muted)]">
-          Spotify needs SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET. See the README.
-        </p>
-      )}
+          <ConnectApple enabled={env.apple.configured} />
+        </div>
 
-      <div className="mt-auto pt-14">
-        <p className="text-xs leading-relaxed text-[var(--color-muted)]">
-          Scores come from {referenceSource} listener counts — how many real people play a
-          track worldwide. Nothing is stored on a server.
+        {spotifyConnected && session.spotify?.displayName && (
+          <p className="mt-4 text-xs text-[var(--color-cream)]/70">
+            Connected as {session.spotify.displayName}
+          </p>
+        )}
+        {!env.spotify.configured && (
+          <p className="mt-4 text-xs leading-relaxed text-[var(--color-cream)]/70">
+            Spotify needs SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET. See the README.
+          </p>
+        )}
+
+        <p className="mt-9 text-xs leading-relaxed text-[var(--color-cream)]/70">
+          Scored on {referenceSource} listener counts. Nothing is stored on a server.{" "}
+          <Link href="/method" className="text-[var(--color-cream)] underline underline-offset-4">
+            How it works
+          </Link>
         </p>
-        <Link
-          href="/method"
-          className="mt-2 inline-block text-xs text-[var(--color-cream)] underline underline-offset-4"
-        >
-          How the score works
-        </Link>
-      </div>
-    </main>
+        </div>
+      </main>
     </Ground>
   );
 }
 
 const primaryPill =
-  "flex items-center justify-center gap-2.5 rounded-full bg-[var(--color-cream)] px-7 py-4 text-[15px] font-bold text-[var(--color-ink)] transition hover:brightness-105 active:scale-[0.99]";
+  "flex items-center justify-center gap-2.5 rounded-full bg-[var(--color-cream)] px-7 py-4 text-[15px] font-bold text-[var(--color-ink)] shadow-[0_10px_30px_-8px_rgba(0,0,0,0.5)] transition hover:brightness-105 active:scale-[0.99]";
 
 function PlayMark() {
   return (

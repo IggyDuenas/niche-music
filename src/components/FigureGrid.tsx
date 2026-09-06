@@ -78,12 +78,14 @@ export function FigureGrid({
   className = "",
   animate = true,
   style,
+  preserveAspectRatio,
 }: {
   rows?: number;
   cols?: number;
   className?: string;
   animate?: boolean;
   style?: React.CSSProperties;
+  preserveAspectRatio?: string;
 }) {
   const cells = [];
   for (let row = 0; row < rows; row++) {
@@ -107,6 +109,7 @@ export function FigureGrid({
       viewBox={`-4 -4 ${cols * CELL_W + 8} ${rows * CELL_H + 8}`}
       className={className}
       style={style}
+      preserveAspectRatio={preserveAspectRatio}
       role="img"
       aria-label="A grid of figures, standing at the top and dancing at the bottom"
     >
@@ -115,13 +118,40 @@ export function FigureGrid({
   );
 }
 
-/** The sleeve in its frame — the shape the whole design is built around. */
-export function CoverArt({ className = "" }: { className?: string }) {
+/**
+ * The dancers as the room rather than as a picture on the wall: a full-bleed
+ * field of figures behind everything, standing along the top and dancing by the
+ * bottom.
+ *
+ * The SVG is scaled with `slice`, so the grid always covers the viewport and
+ * crops at the edges instead of letterboxing or squashing the figures.
+ */
+export function FigureField({ rows = 20, cols = 28 }: { rows?: number; cols?: number }) {
   return (
-    <div
-      className={`relative overflow-hidden rounded-[1.75rem] bg-[var(--color-art)] p-4 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.65)] ${className}`}
-    >
-      <FigureGrid rows={10} cols={10} className="w-full text-[var(--color-art-ink)]" />
+    <div className="pointer-events-none fixed inset-0 overflow-hidden bg-[var(--color-art)]">
+      {/*
+       * The grid is deliberately larger than any viewport. `slice` scales it to
+       * cover and crops the overflow, which keeps each figure at roughly the
+       * same size on a phone as on a desktop — a smaller grid would simply
+       * enlarge the figures to fill a wide screen.
+       *
+       * Not animated: a stagger across 500-odd figures is a lot of work for a
+       * backdrop, and the load should be calm rather than busy.
+       */}
+      <FigureGrid
+        rows={rows}
+        cols={cols}
+        animate={false}
+        preserveAspectRatio="xMidYMid slice"
+        className="h-full w-full text-[var(--color-art-ink)]"
+      />
+      {/*
+       * Only a soft vignette. Legibility is handled by the plate the content
+       * sits on rather than by dimming the field — darkening enough to read
+       * cream text over dark figures would have washed the dancers out entirely,
+       * and on the ochre pressing the figures are the dark element.
+       */}
+      <div className="absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_50%,transparent_45%,rgba(0,0,0,0.3)_100%)]" />
     </div>
   );
 }

@@ -133,18 +133,26 @@ public reference data, held in memory for a day.
 
 ## Design
 
-The look is built around one piece of generated artwork: a 10x10 grid of
-figures that stand still at the top and end up dancing at the bottom
+The look is built around one piece of generated artwork: a grid of figures that
+stand still along the top and end up dancing by the bottom
 (`src/components/FigureGrid.tsx`). Nothing is hand-drawn — each pose comes from
 the cell's own coordinates through `energyAt` and a handful of limb angles, so
 the grid can be any size and no two figures repeat. The values are
 deterministic rather than random, because a random pose would differ between
 the server and client renders and break hydration.
 
-The landing page is laid out like an album page — artwork, title, artist line,
-meta line, then the buttons. Motion is limited to a slow diagonal settle when
-the figures first appear, and it is disabled entirely under
-`prefers-reduced-motion`.
+On the landing page the figures are the room, not a picture in it: `FigureField`
+fills the viewport behind everything, and the question and the two connect
+buttons sit in the middle of it. The grid is deliberately larger than any
+viewport and scaled with `slice`, so a figure stays about the same size on a
+phone as on a desktop instead of being blown up to fill a wide screen.
+
+The content sits on a translucent plate rather than directly on the field.
+Cream text laid straight onto the dancers is unreadable wherever a figure passes
+behind it, and darkening the field enough to fix that washed the dancers out —
+on the ochre pressing the figures are the dark element, so no amount of dimming
+helps. The plate keeps every colourway legible while the field stays at full
+strength.
 
 ### Colourways
 

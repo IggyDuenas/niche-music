@@ -29,7 +29,7 @@ export function ConnectApple({ enabled, challenge }: { enabled: boolean; challen
         type="button"
         onClick={connect}
         disabled={!enabled || state === "working"}
-        className="flex w-full items-center justify-center gap-2.5 rounded-full border border-[var(--color-cream)]/25 px-7 py-4 text-[15px] font-semibold transition enabled:hover:border-[var(--color-cream)]/60 enabled:hover:bg-[var(--color-cream)]/5 disabled:cursor-not-allowed disabled:opacity-40"
+        className="flex w-full items-center justify-center gap-2.5 rounded-full border border-[var(--color-cream)]/35 px-7 py-4 text-[15px] font-semibold transition enabled:hover:border-[var(--color-cream)]/60 enabled:hover:bg-[var(--color-cream)]/5 disabled:cursor-not-allowed disabled:opacity-40"
       >
         <AppleMark />
         {state === "working" ? "Connecting…" : "Connect Apple Music"}
