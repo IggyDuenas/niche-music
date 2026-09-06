@@ -1,5 +1,5 @@
 import { env } from "./env";
-import type { LibraryTrack } from "./types";
+import type { LibraryTrack, PlaylistSummary } from "./types";
 import type { Session } from "./session";
 
 const ACCOUNTS = "https://accounts.spotify.com";
@@ -274,4 +274,69 @@ export async function fetchProfile(accessToken: string): Promise<{ displayName?:
     // The February 2026 changes trimmed profile fields; a name is optional here.
     return {};
   }
+}
+
+/** The user's own playlists, for the picker. */
+export async function fetchPlaylists(accessToken: string): Promise<PlaylistSummary[]> {
+  const client = new SpotifyClient(accessToken);
+  const playlists: PlaylistSummary[] = [];
+  let page = await client.get<{
+    items?: {
+      id: string;
+      name: string;
+      images?: { url: string }[];
+      owner?: { display_name?: string };
+      tracks?: { total?: number };
+      items?: { total?: number };
+    }[];
+    next?: string | null;
+  }>("/me/playlists?limit=50");
+
+  while (page) {
+    for (const item of page.items ?? []) {
+      if (!item?.id || !item.name) continue;
+      playlists.push({
+        id: item.id,
+        name: item.name,
+        // February 2026 renamed the nested collection; read whichever is present.
+        trackCount: item.tracks?.total ?? item.items?.total ?? null,
+        imageUrl: item.images?.[0]?.url,
+        owner: item.owner?.display_name,
+        provider: "spotify",
+      });
+    }
+    if (!page.next || playlists.length >= 200) break;
+    page = await client.get(page.next);
+  }
+  return playlists;
+}
+
+/** Every track in one playlist. */
+export async function fetchPlaylistTracks(
+  accessToken: string,
+  playlistId: string,
+  playlistName: string,
+  maxTracks = 500,
+): Promise<LibraryTrack[]> {
+  const client = new SpotifyClient(accessToken);
+  return paginate(
+    client,
+    [`/playlists/${playlistId}/tracks?limit=50`, `/playlists/${playlistId}/items?limit=50`],
+    playlistName,
+    maxTracks,
+  );
+}
+
+/** Liked songs, offered in the picker alongside real playlists. */
+export async function fetchLikedSongs(
+  accessToken: string,
+  maxTracks = 500,
+): Promise<LibraryTrack[]> {
+  const client = new SpotifyClient(accessToken);
+  return paginate(
+    client,
+    ["/me/tracks?limit=50", "/me/library?limit=50"],
+    "Liked songs",
+    maxTracks,
+  );
 }

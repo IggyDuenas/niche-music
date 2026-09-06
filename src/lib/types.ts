@@ -50,6 +50,17 @@ export type ScoredTrack = LibraryTrack & {
 
 export type TagCount = { tag: string; count: number; share: number };
 
+/** One playlist as shown in the picker, before anything is analysed. */
+export type PlaylistSummary = {
+  id: string;
+  name: string;
+  /** Null when the provider does not report a total up front. */
+  trackCount: number | null;
+  imageUrl?: string;
+  owner?: string;
+  provider: Provider;
+};
+
 export type AnalysisResult = {
   provider: Provider | "combined";
   generatedAt: string;

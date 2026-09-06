@@ -1,6 +1,6 @@
 import { SignJWT, importPKCS8 } from "jose";
 import { env } from "./env";
-import type { LibraryTrack } from "./types";
+import type { LibraryTrack, PlaylistSummary } from "./types";
 
 const API = "https://api.music.apple.com";
 
@@ -157,4 +157,48 @@ export async function fetchAppleLibrary(
   }
 
   return { tracks, warnings };
+}
+
+/** The user's Apple Music library playlists, for the picker. */
+export async function fetchApplePlaylists(userToken: string): Promise<PlaylistSummary[]> {
+  const devToken = await developerToken();
+  const playlists: PlaylistSummary[] = [];
+  let path: string | undefined = "/v1/me/library/playlists?limit=100";
+
+  while (path && playlists.length < 200) {
+    const page: {
+      data?: { id: string; attributes?: { name?: string; artwork?: { url?: string } } }[];
+      next?: string;
+    } = await fetchPage(path, devToken, userToken);
+
+    for (const item of page.data ?? []) {
+      if (!item.id || !item.attributes?.name) continue;
+      playlists.push({
+        id: item.id,
+        name: item.attributes.name,
+        // Apple does not return a track total on the playlist listing.
+        trackCount: null,
+        imageUrl: artwork(item.attributes.artwork?.url),
+        provider: "apple",
+      });
+    }
+    path = page.next;
+  }
+  return playlists;
+}
+
+export async function fetchApplePlaylistTracks(
+  userToken: string,
+  playlistId: string,
+  playlistName: string,
+  maxTracks = 500,
+): Promise<LibraryTrack[]> {
+  const devToken = await developerToken();
+  return collect(
+    `/v1/me/library/playlists/${playlistId}/tracks?limit=100`,
+    playlistName,
+    maxTracks,
+    devToken,
+    userToken,
+  );
 }

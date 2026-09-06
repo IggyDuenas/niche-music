@@ -1,15 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --color-ink: #07070a;
-  --color-panel: #101017;
-  --color-panel-2: #17171f;
-  --color-edge: #26262f;
-  --color-muted: #8b8b98;
-  --color-chalk: #f2f2f5;
-  --color-accent: #b8ff3c;
-  --color-accent-dim: #7fae2a;
-  --color-hot: #ff5f6d;
+  /* A dusk sky: deep indigo at the top, warmer toward the horizon. */
+  --color-ink: #0a0a18;
+  --color-dusk: #171633;
+  --color-panel: #14142a;
+  --color-panel-2: #1c1b38;
+  --color-edge: #2b2a4d;
+  --color-muted: #9694bb;
+  --color-chalk: #f4f3ff;
+  --color-accent: #7cf5d5;
+  --color-accent-dim: #3fbfa2;
+  --color-hot: #ff7a9c;
+  --color-gold: #ffd479;
   --font-display: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
@@ -19,22 +22,61 @@ html {
 
 body {
   background:
-    radial-gradient(900px 500px at 15% -10%, rgba(184, 255, 60, 0.09), transparent 60%),
-    radial-gradient(700px 500px at 90% 0%, rgba(255, 95, 109, 0.07), transparent 55%),
-    var(--color-ink);
+    radial-gradient(1100px 620px at 50% 105%, rgba(255, 212, 121, 0.1), transparent 62%),
+    radial-gradient(900px 520px at 12% -8%, rgba(124, 245, 213, 0.09), transparent 60%),
+    linear-gradient(180deg, var(--color-ink) 0%, var(--color-dusk) 58%, #201a3d 100%);
+  background-attachment: fixed;
   color: var(--color-chalk);
   font-family: var(--font-display);
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
 }
 
-.panel {
-  background: color-mix(in srgb, var(--color-panel) 88%, transparent);
-  border: 1px solid var(--color-edge);
-  border-radius: 1rem;
+/*
+ * Declared inside the components layer so Tailwind's utility layer still wins —
+ * otherwise an unlayered rule here would beat every border-* utility applied to
+ * a panel, and things like the winner's highlight border would silently vanish.
+ */
+@layer components {
+  .panel {
+    background: color-mix(in srgb, var(--color-panel) 82%, transparent);
+    border: 1px solid var(--color-edge);
+    border-radius: 1rem;
+    backdrop-filter: blur(14px);
+  }
 }
 
 /* Tabular figures keep changing numbers from jittering. */
 .nums {
   font-variant-numeric: tabular-nums;
+}
+
+/*
+ * Clouds drift across the full width. Each one gets a negative animation-delay
+ * so the sky is already populated on first paint rather than filling up from
+ * the left edge.
+ */
+@keyframes drift {
+  from {
+    transform: translate3d(-30vw, 0, 0);
+  }
+  to {
+    transform: translate3d(130vw, 0, 0);
+  }
+}
+
+.cloud {
+  position: absolute;
+  animation-name: drift;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloud {
+    animation: none;
+    /* Without the drift the clouds would all pile up off-screen left. */
+    transform: translate3d(20vw, 0, 0);
+  }
 }

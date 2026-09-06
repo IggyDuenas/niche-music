@@ -2,7 +2,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { clampTracks, runAnalysis } from "@/lib/analyze";
 import { ConfigError } from "@/lib/env";
 import { readSession, writeSession } from "@/lib/session";
-import { ensureFreshToken, fetchLibrary } from "@/lib/spotify";
+import { ensureFreshToken, fetchLibrary, fetchLikedSongs, fetchPlaylistTracks } from "@/lib/spotify";
+import { toShareCard } from "@/lib/share";
+import type { LibraryTrack } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 // Reference lookups for a few hundred tracks take a while.
@@ -22,21 +24,41 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json().catch(() => ({}));
     const maxTracks = clampTracks(body.maxTracks);
+    const playlistId = typeof body.playlistId === "string" ? body.playlistId : null;
+    const playlistName = typeof body.playlistName === "string" ? body.playlistName : "Playlist";
 
-    const { tracks, warnings } = await fetchLibrary(spotify.accessToken, {
-      maxTracks,
-      includePlaylists: body.includePlaylists !== false,
-    });
+    let tracks: LibraryTrack[];
+    let warnings: string[] = [];
+    let label: string;
+
+    if (playlistId === "liked") {
+      tracks = await fetchLikedSongs(spotify.accessToken, maxTracks);
+      label = "Liked songs";
+    } else if (playlistId) {
+      tracks = await fetchPlaylistTracks(spotify.accessToken, playlistId, playlistName, maxTracks);
+      label = playlistName;
+    } else {
+      const library = await fetchLibrary(spotify.accessToken, { maxTracks });
+      tracks = library.tracks;
+      warnings = library.warnings;
+      label = "Everything";
+    }
 
     if (tracks.length === 0) {
       return NextResponse.json(
-        { error: "No tracks found in your Spotify account.", warnings },
+        { error: `No tracks found in "${label}".`, warnings },
         { status: 422 },
       );
     }
 
     const { result } = await runAnalysis(tracks, "spotify");
-    return NextResponse.json({ result, warnings });
+    const owner = spotify.displayName ?? "You";
+    return NextResponse.json({
+      result,
+      warnings,
+      label,
+      card: toShareCard(result, label, owner),
+    });
   } catch (error) {
     return errorResponse(error);
   }

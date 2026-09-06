@@ -1,7 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { fetchAppleLibrary } from "@/lib/apple";
+import { fetchAppleLibrary, fetchApplePlaylistTracks } from "@/lib/apple";
 import { clampTracks, runAnalysis } from "@/lib/analyze";
 import { ConfigError } from "@/lib/env";
+import { toShareCard } from "@/lib/share";
+import type { LibraryTrack } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 120;
@@ -14,19 +16,36 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Missing Apple Music user token." }, { status: 400 });
     }
 
-    const { tracks, warnings } = await fetchAppleLibrary(userToken, {
-      maxTracks: clampTracks(body.maxTracks),
-    });
+    const maxTracks = clampTracks(body.maxTracks);
+    const playlistId = typeof body.playlistId === "string" ? body.playlistId : null;
+    const playlistName = typeof body.playlistName === "string" ? body.playlistName : "Playlist";
+    const owner = typeof body.owner === "string" ? body.owner : "You";
+
+    let tracks: LibraryTrack[];
+    let warnings: string[] = [];
+    let label: string;
+
+    if (playlistId) {
+      tracks = await fetchApplePlaylistTracks(userToken, playlistId, playlistName, maxTracks);
+      label = playlistName;
+    } else {
+      const library = await fetchAppleLibrary(userToken, { maxTracks });
+      tracks = library.tracks;
+      warnings = library.warnings;
+      label = "Everything";
+    }
 
     if (tracks.length === 0) {
-      return NextResponse.json(
-        { error: "No tracks found in your Apple Music library.", warnings },
-        { status: 422 },
-      );
+      return NextResponse.json({ error: `No tracks found in "${label}".`, warnings }, { status: 422 });
     }
 
     const { result } = await runAnalysis(tracks, "apple");
-    return NextResponse.json({ result, warnings });
+    return NextResponse.json({
+      result,
+      warnings,
+      label,
+      card: toShareCard(result, label, owner),
+    });
   } catch (error) {
     if (error instanceof ConfigError) {
       return NextResponse.json({ error: error.message }, { status: 500 });

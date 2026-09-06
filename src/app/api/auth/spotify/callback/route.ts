@@ -30,8 +30,15 @@ export async function GET(request: NextRequest) {
     const session = await readSession();
     await writeSession({ ...session, spotify: { ...spotify, displayName: profile.displayName } });
 
-    const response = NextResponse.redirect(`${env.appUrl}/results`);
+    // A challenge parked before login survives the round trip.
+    const challenge = request.cookies.get("nm_vs")?.value;
+    const destination = new URL(`${env.appUrl}/playlists`);
+    destination.searchParams.set("source", "spotify");
+    if (challenge) destination.searchParams.set("vs", challenge);
+
+    const response = NextResponse.redirect(destination);
     response.cookies.delete("nm_oauth_state");
+    response.cookies.delete("nm_vs");
     return response;
   } catch (error) {
     return fail(error instanceof Error ? error.message : "Spotify login failed.");

@@ -1,8 +1,9 @@
 # Niche Music
 
-Connect Spotify or Apple Music, and every song in your library gets scored
-against worldwide listening data. You get one number — how obscure your taste
-actually is — plus the breakdown behind it.
+Connect Spotify or Apple Music, pick a playlist, and every song in it gets
+scored against worldwide listening data. You get one number — how obscure that
+playlist really is — and a link you can send to a friend to settle whose taste
+wins.
 
 ## Why the data comes from somewhere else
 
@@ -33,10 +34,10 @@ so those numbers are approximations on the same log scale.
 
 ## How the score works
 
-1. **Read the library.** Spotify: liked songs, top tracks (all-time and
-   6-month), and your first 20 playlists. Apple Music: saved songs and heavy
-   rotation. Capped at 400 tracks by default and deduplicated, so the same song
-   across four playlists counts once.
+1. **Read one playlist.** You choose which — any Spotify or Apple Music
+   playlist, your liked songs, or everything at once. Deduplicated, so the same
+   song appearing twice counts once. Scoring one playlist at a time is what
+   makes a head-to-head fair.
 2. **Look up audience size.** Each unique track and artist is matched against
    the reference corpus. Titles are cleaned first — `"Weird Fishes / Arpeggi -
    2016 Remaster"` will not match anything as written, but `"Weird Fishes /
@@ -100,14 +101,45 @@ npm run typecheck
 npm run build
 ```
 
+## Comparing with friends
+
+Once a playlist is scored, "Challenge a friend" produces a link. The entire
+result card — name, score, verdict, a few standout tracks — is base64url-encoded
+**inside the link itself**, so:
+
+- there is no database, no accounts and no sign-up on either side;
+- the link works immediately and forever, with nothing to expire server-side;
+- **anyone holding the link can read that playlist's score.** The link is the
+  data. Treat it like any other shared URL.
+
+Your friend opens it, sees your card, connects their own account, picks one of
+their playlists, and lands on `/vs?a=…&b=…` with both cards side by side and a
+winner. A card is about 300 characters encoded, so the links stay short enough
+to paste anywhere.
+
+Every field is re-validated and clamped on the way back out of a link
+(`decodeCard` in `src/lib/share.ts`) — a hostile link produces a boring card,
+not a broken page.
+
+If you later want a persistent leaderboard or a friends list, that is the point
+where a database earns its place. Nothing in the current design blocks it.
+
 ## What is stored
 
 Nothing server-side. There is no database. The Spotify tokens live in a signed,
-httpOnly session cookie; the Apple Music user token is passed once per analysis
-and never persisted. Analysis results are held in the browser's `sessionStorage`
-for the Apple Music flow and discarded on read. The only long-lived cache is
-artist listener counts, which is public reference data, held in memory for a
-day.
+httpOnly session cookie; the Apple Music user token stays in the browser tab's
+`sessionStorage`. The only long-lived cache is artist listener counts, which is
+public reference data, held in memory for a day.
+
+## Pages
+
+| Route | What it does |
+| --- | --- |
+| `/` | Headline, drifting clouds, the two connect boxes |
+| `/playlists` | Pick which playlist to score |
+| `/results` | The score, the breakdown, and the challenge link |
+| `/vs` | One card is an invitation; two cards is a head-to-head |
+| `/method` | How the score is calculated, and what it can't know |
 
 ## Deploying
 
