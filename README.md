@@ -113,9 +113,26 @@ result card — name, score, verdict, a few standout tracks — is base64url-enc
   data. Treat it like any other shared URL.
 
 Your friend opens it, sees your card, connects their own account, picks one of
-their playlists, and lands on `/vs?a=…&b=…` with both cards side by side and a
-winner. A card is about 300 characters encoded, so the links stay short enough
-to paste anywhere.
+their playlists, and lands on `/vs?a=…&b=…`.
+
+The head-to-head is decided on overall score but broken out over **seven
+rounds** — overall obscurity, deep cuts, rarest single find, median audience,
+chart hits, artist variety, and commitment — because one mean score hides a
+lot. A playlist can score well on a single unheard-of track or by being
+uniformly obscure, and those are different kinds of taste; commitment (the
+spread of the scores) is what separates them. Three of the rounds are won by
+the *lower* number, and those rows say so outright: the bars are honest
+magnitudes, so without a marker "longer is better" would quietly misread half
+the table.
+
+Below that, both playlists' distributions are overlaid as **shares of each
+playlist** rather than track counts — plotting counts would only show which
+playlist is longer — and a common-ground panel lists the genres and artists
+they share against the ones only one side has.
+
+A full card is around 450 characters encoded, so a two-card comparison URL runs
+under 1000 and still pastes anywhere. Every list in the card is capped for that
+reason, and a test asserts the budget.
 
 Every field is re-validated and clamped on the way back out of a link
 (`decodeCard` in `src/lib/share.ts`) — a hostile link produces a boring card,
@@ -123,6 +140,19 @@ not a broken page.
 
 If you later want a persistent leaderboard or a friends list, that is the point
 where a database earns its place. Nothing in the current design blocks it.
+
+## Searching the catalogue
+
+Connecting Apple Music also unlocks `/search`: type a song or artist and each
+result comes back scored, so you can check something before you own it. It hits
+the Apple Music catalogue search endpoint for the user's own storefront (falling
+back to `us`), then runs the results through the same reference lookup as a
+playlist. Searching is debounced and results are capped, since each hit is its
+own listener lookup.
+
+Spotify has no equivalent here: its catalogue search is restricted to 5-10
+results in development mode, and Apple's catalogue search only needs the
+developer token the app already signs.
 
 ## What is stored
 
@@ -191,6 +221,7 @@ underneath can transition, a gradient cannot.
 | `/playlists` | Pick which playlist to score |
 | `/results` | The score, the breakdown, and the challenge link |
 | `/vs` | One card is an invitation; two cards is a head-to-head |
+| `/search` | Score any song in the Apple Music catalogue |
 | `/method` | How the score is calculated, and what it can't know |
 
 ## Deploying

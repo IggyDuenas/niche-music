@@ -3,7 +3,11 @@ import { env } from "@/lib/env";
 import { readSession, type Session } from "@/lib/session";
 import { ConnectApple } from "@/components/ConnectApple";
 import { VersusCard } from "@/components/VersusCard";
-import { compare, decodeCard } from "@/lib/share";
+import { decodeCard, distributionShares, verdict as buildVerdict } from "@/lib/share";
+import { Rounds } from "@/components/versus/Rounds";
+import { DistributionOverlay } from "@/components/versus/DistributionOverlay";
+import { CommonGround } from "@/components/versus/CommonGround";
+import { Panel } from "@/components/Panel";
 import { Ground } from "@/components/Ground";
 import { colorwayFor, DEFAULT_COLORWAY } from "@/lib/colorways";
 
@@ -38,28 +42,55 @@ export default async function VersusPage({
     return <Invitation card={cardA} encoded={a ?? ""} />;
   }
 
-  const { winner, gap, tied } = compare(cardA, cardB);
+  const result = buildVerdict(cardA, cardB);
+  const { winner, gap, tied, roundsWon } = result;
+  const championName = winner === "a" ? cardA.o : cardB.o;
 
   return (
-    <Shell seed={tied || winner === "a" ? cardA.n : cardB.n}>
+    <Shell seed={tied || winner === "a" ? cardA.n : cardB.n} wide>
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-          {tied
-            ? "Dead heat"
-            : winner === "a"
-              ? `${cardA.o} wins`
-              : `${cardB.o} wins`}
+          {tied ? "Dead heat" : `${championName} wins`}
         </h1>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
           {tied
-            ? "These two playlists are equally obscure. Settle it another way."
-            : `By ${gap} points. ${winner === "a" ? cardA.o : cardB.o} listens to music fewer people have found.`}
+            ? "Level on overall score."
+            : `By ${gap} points on overall obscurity.`}{" "}
+          {roundsWon.a === roundsWon.b
+            ? `The seven rounds split ${roundsWon.a}-${roundsWon.b}.`
+            : `${roundsWon.a > roundsWon.b ? cardA.o : cardB.o} took ${Math.max(roundsWon.a, roundsWon.b)} of the seven rounds.`}
         </p>
       </header>
 
       <div className="grid items-stretch gap-4 sm:grid-cols-2">
         <VersusCard card={cardA} outcome={tied ? "tie" : winner === "a" ? "win" : "loss"} />
         <VersusCard card={cardB} outcome={tied ? "tie" : winner === "b" ? "win" : "loss"} />
+      </div>
+
+      <Panel
+        title="Round by round"
+        hint="Seven ways of asking the same question — one mean score hides a lot."
+        className="mt-4"
+      >
+        <Rounds rounds={result.rounds} nameA={cardA.n} nameB={cardB.n} />
+      </Panel>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        <Panel
+          title="Shape of each playlist"
+          hint="Share of each playlist scoring in each band, so length does not decide it."
+        >
+          <DistributionOverlay
+            a={distributionShares(cardA)}
+            b={distributionShares(cardB)}
+            nameA={cardA.n}
+            nameB={cardB.n}
+          />
+        </Panel>
+
+        <Panel title="Where you overlap">
+          <CommonGround verdict={result} nameA={cardA.n} nameB={cardB.n} />
+        </Panel>
       </div>
 
       <div className="mt-8 text-center">
@@ -127,10 +158,18 @@ async function Invitation({ card, encoded }: { card: Awaited<ReturnType<typeof d
   );
 }
 
-function Shell({ children, seed }: { children: React.ReactNode; seed?: string }) {
+function Shell({
+  children,
+  seed,
+  wide = false,
+}: {
+  children: React.ReactNode;
+  seed?: string;
+  wide?: boolean;
+}) {
   return (
     <Ground colorway={seed ? colorwayFor(seed) : DEFAULT_COLORWAY}>
-      <main className="mx-auto max-w-3xl px-5 py-12">
+      <main className={`mx-auto px-5 py-12 ${wide ? "max-w-4xl" : "max-w-3xl"}`}>
         <Link href="/" className="text-xs text-[var(--color-muted)] underline underline-offset-2">
           ← Niche Music
         </Link>

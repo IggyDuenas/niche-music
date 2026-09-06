@@ -202,3 +202,55 @@ export async function fetchApplePlaylistTracks(
     userToken,
   );
 }
+
+/**
+ * The user's storefront, which catalogue search is scoped to. Falls back to the
+ * US catalogue rather than failing — a wrong storefront returns slightly
+ * different regional results, not an error.
+ */
+export async function appleStorefront(userToken: string): Promise<string> {
+  try {
+    const devToken = await developerToken();
+    const response = await fetchPage("/v1/me/storefront", devToken, userToken);
+    const id = (response as { data?: { id?: string }[] }).data?.[0]?.id;
+    return id ?? "us";
+  } catch {
+    return "us";
+  }
+}
+
+type AppleCatalogSearch = {
+  results?: { songs?: { data?: AppleSong[] } };
+};
+
+/**
+ * Searches the Apple Music catalogue — the whole catalogue, not just the user's
+ * library, so a song can be scored before you own it.
+ */
+export async function searchAppleCatalog(
+  userToken: string,
+  term: string,
+  limit = 20,
+): Promise<LibraryTrack[]> {
+  const trimmed = term.trim();
+  if (trimmed.length === 0) return [];
+
+  const devToken = await developerToken();
+  const storefront = await appleStorefront(userToken);
+  const query = new URLSearchParams({
+    term: trimmed,
+    types: "songs",
+    limit: String(Math.min(25, Math.max(1, limit))),
+  });
+
+  const response = (await fetchPage(
+    `/v1/catalog/${encodeURIComponent(storefront)}/search?${query}`,
+    devToken,
+    userToken,
+  )) as AppleCatalogSearch;
+
+  const songs = response.results?.songs?.data ?? [];
+  return songs
+    .map((song, index) => toLibraryTrack(song, "Search", index))
+    .filter((track): track is LibraryTrack => track !== null);
+}

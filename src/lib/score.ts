@@ -132,6 +132,14 @@ export function distribution(scores: number[]): { bucket: string; count: number 
   return buckets;
 }
 
+/** Population standard deviation. Zero for fewer than two values. */
+export function standardDeviation(values: number[]): number {
+  if (values.length < 2) return 0;
+  const mean = values.reduce((a, b) => a + b, 0) / values.length;
+  const variance = values.reduce((sum, v) => sum + (v - mean) ** 2, 0) / values.length;
+  return round(Math.sqrt(variance));
+}
+
 export function median(values: number[]): number | null {
   const sorted = values.filter(Number.isFinite).sort((a, b) => a - b);
   if (sorted.length === 0) return null;
@@ -162,6 +170,14 @@ function collectTags(tracks: ScoredTrack[]): TagCount[] {
     }))
     .sort((a, b) => b.count - a.count)
     .slice(0, 18);
+}
+
+function distinctGenres(tracks: ScoredTrack[]): number {
+  const tags = new Set<string>();
+  for (const track of tracks) {
+    for (const tag of track.stats.tags.slice(0, 5)) tags.add(tag.toLowerCase());
+  }
+  return tags.size;
 }
 
 function collectArtists(tracks: ScoredTrack[]) {
@@ -206,6 +222,7 @@ export function analyze(
   }
 
   const ranked = [...matched].sort((a, b) => b.nicheScore - a.nicheScore);
+  const distinctArtists = new Set(matched.map((t) => t.artist.toLowerCase())).size;
 
   return {
     provider,
@@ -228,6 +245,11 @@ export function analyze(
     mainstreamShare: matched.length
       ? round((matched.filter((t) => t.nicheScore < MAINSTREAM_AT).length / matched.length) * 100)
       : 0,
+    rarestFind: ranked.length ? ranked[0].nicheScore : 0,
+    artistCount: distinctArtists,
+    artistBreadth: matched.length ? round((distinctArtists / matched.length) * 100) : 0,
+    genreCount: distinctGenres(matched),
+    spread: standardDeviation(scores),
     topTags: collectTags(matched),
     mostNiche: ranked.slice(0, 15),
     mostMainstream: ranked.slice(-15).reverse(),

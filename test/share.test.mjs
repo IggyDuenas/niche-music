@@ -18,7 +18,10 @@ const card = {
 
 test("a card survives a round trip through a link", () => {
   const decoded = decodeCard(encodeCard(card));
-  assert.deepEqual(decoded, card);
+  // Decoding fills in the fields this minimal card omits, so compare the ones it set.
+  for (const [key, value] of Object.entries(card)) {
+    assert.deepEqual(decoded[key], value, `${key} did not survive the round trip`);
+  }
 });
 
 test("encoded cards are URL-safe and short enough to share", () => {
@@ -93,7 +96,15 @@ test("toShareCard trims a full result down to the sharable parts", () => {
       verdict: { label: "Crate digger", blurb: "long text that should not travel" },
       matchedTracks: 50,
       deepCutShare: 20,
+      mainstreamShare: 15,
       medianTrackListeners: 9000,
+      rarestFind: 90,
+      artistBreadth: 64,
+      genreCount: 9,
+      spread: 17,
+      distribution: Array.from({ length: 10 }, (_, i) => ({ bucket: `${i * 10}`, count: i })),
+      topTags: [{ tag: "slowcore", count: 4, share: 20 }],
+      deepestArtists: [{ artist: "Duster", listeners: 41000, trackCount: 3 }],
       mostNiche: [
         { title: "A", artist: "B", nicheScore: 90 },
         { title: "C", artist: "D", nicheScore: 80 },
@@ -109,4 +120,99 @@ test("toShareCard trims a full result down to the sharable parts", () => {
   assert.equal(shared.h.length, 3, "only a few highlights travel");
   assert.equal(shared.v, "Crate digger");
   assert.ok(!("blurb" in shared), "the long blurb is not carried in the link");
+});
+
+/* ---------------- the deeper head-to-head ---------------- */
+
+const { rounds, verdict, distributionShares } = await import("../src/lib/share.ts");
+
+const full = {
+  ...card,
+  ms: 20,
+  rf: 91,
+  ab: 70,
+  gc: 12,
+  sp: 18,
+  db: [1, 2, 4, 8, 12, 20, 18, 10, 6, 2],
+  tg: ["slowcore", "indie", "shoegaze", "ambient", "lo-fi", "dream pop"],
+  ar: ["Duster", "Bedhead", "Codeine"],
+};
+
+test("a full card still round-trips through a link", () => {
+  assert.deepEqual(decodeCard(encodeCard(full)), full);
+});
+
+test("a two-card comparison URL stays short enough to send", () => {
+  const url = `https://niche.music/vs?a=${encodeCard(full)}&b=${encodeCard(full)}`;
+  // Both cards plus the origin have to survive being pasted into a message.
+  assert.ok(url.length < 2000, `comparison URL grew to ${url.length} characters`);
+});
+
+test("a card missing the new fields decodes to safe defaults", () => {
+  // A link generated before these fields existed must not break the page.
+  const legacy = decodeCard(encodeCard(card));
+  assert.equal(legacy.db.length, 10, "the distribution is always ten buckets");
+  assert.deepEqual(legacy.tg, []);
+  assert.deepEqual(legacy.ar, []);
+  assert.equal(legacy.rf, 0);
+});
+
+test("a hostile distribution is forced back to ten buckets", () => {
+  const hostile = decodeCard(encodeCard({ ...full, db: [5, 5] }));
+  assert.equal(hostile.db.length, 10);
+  const tooMany = decodeCard(encodeCard({ ...full, db: new Array(60).fill(3) }));
+  assert.equal(tooMany.db.length, 10);
+});
+
+test("rounds award each metric in the right direction", () => {
+  const obscure = { ...full, s: 70, d: 40, rf: 95, m: 900, ms: 2, ab: 80, sp: 8 };
+  const popular = { ...full, s: 30, d: 5, rf: 50, m: 900000, ms: 60, ab: 40, sp: 25 };
+  const byKey = Object.fromEntries(rounds(obscure, popular).map((r) => [r.key, r]));
+
+  assert.equal(byKey.overall.winner, "a");
+  assert.equal(byKey.deep.winner, "a");
+  assert.equal(byKey.rarest.winner, "a");
+  // Fewer listeners is the more obscure result, so the smaller number wins.
+  assert.equal(byKey.audience.winner, "a", "fewer median listeners should win");
+  assert.equal(byKey.hits.winner, "a", "fewer chart hits should win");
+  assert.equal(byKey.variety.winner, "a");
+  // Low spread means the whole playlist is obscure, not one outlier.
+  assert.equal(byKey.commitment.winner, "a", "lower spread should win");
+});
+
+test("identical playlists draw every round", () => {
+  const result = verdict(full, { ...full });
+  assert.equal(result.roundsWon.drawn, result.rounds.length);
+  assert.equal(result.roundsWon.a, 0);
+  assert.equal(result.roundsWon.b, 0);
+  assert.equal(result.tied, true);
+});
+
+test("the verdict finds shared and exclusive genres", () => {
+  const other = { ...full, tg: ["indie", "techno", "ambient"], ar: ["Duster", "Aphex Twin"] };
+  const result = verdict(full, other);
+
+  assert.deepEqual(result.common.artists, ["Duster"]);
+  assert.deepEqual(result.common.tags.sort(), ["ambient", "indie"]);
+  assert.ok(result.only.a.includes("slowcore"), "A keeps the genres B lacks");
+  assert.ok(result.only.b.includes("techno"), "B keeps the genres A lacks");
+  assert.ok(!result.only.a.includes("indie"), "shared genres are not listed as exclusive");
+});
+
+test("overlap matching ignores case", () => {
+  const result = verdict({ ...full, tg: ["Indie"] }, { ...full, tg: ["indie"] });
+  assert.equal(result.common.tags.length, 1);
+});
+
+test("distribution is compared as shares, not raw counts", () => {
+  // The same shape at ten times the length must produce the same curve.
+  const small = { ...full, db: [1, 2, 3, 4, 0, 0, 0, 0, 0, 0] };
+  const large = { ...full, db: [10, 20, 30, 40, 0, 0, 0, 0, 0, 0] };
+  assert.deepEqual(distributionShares(small), distributionShares(large));
+  assert.equal(Math.round(distributionShares(small).reduce((a, b) => a + b, 0)), 100);
+});
+
+test("an empty distribution does not divide by zero", () => {
+  const shares = distributionShares({ ...full, db: new Array(10).fill(0) });
+  assert.deepEqual(shares, new Array(10).fill(0));
 });

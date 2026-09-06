@@ -82,6 +82,14 @@ export default async function Home({
           <Link href="/method" className="text-[var(--color-cream)] underline underline-offset-4">
             How it works
           </Link>
+          {env.apple.configured && (
+            <>
+              {" · "}
+              <Link href="/search" className="text-[var(--color-cream)] underline underline-offset-4">
+                Score one song
+              </Link>
+            </>
+          )}
         </p>
         </div>
       </main>

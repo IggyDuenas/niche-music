@@ -87,6 +87,15 @@ function PlaylistsInner() {
             : "Score one playlist at a time — that is what makes a fair head-to-head."}
         </p>
 
+        {source === "apple" && !challenge && (
+          <Link
+            href="/search"
+            className="mt-4 inline-block text-sm text-[var(--color-cream)] underline underline-offset-4"
+          >
+            Or score a single song →
+          </Link>
+        )}
+
         {error && (
           <div className="mt-6 rounded-lg border border-[var(--color-gold)]/40 bg-[var(--color-gold)]/10 px-4 py-3">
             <p className="text-sm text-[var(--color-gold)]">{error}</p>

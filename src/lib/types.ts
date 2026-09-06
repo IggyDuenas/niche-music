@@ -80,6 +80,19 @@ export type AnalysisResult = {
   deepCutShare: number;
   /** Share of matched tracks with a niche score below 30. */
   mainstreamShare: number;
+  /** The single most obscure track's score — the deepest thing in here. */
+  rarestFind: number;
+  /** Distinct artists among the matched tracks. */
+  artistCount: number;
+  /** Distinct artists as a share of matched tracks. High means little repetition. */
+  artistBreadth: number;
+  /** Distinct genre tags across the matched artists. */
+  genreCount: number;
+  /**
+   * Standard deviation of the per-track scores. Low means the whole playlist is
+   * of a piece; high means a couple of outliers are carrying the average.
+   */
+  spread: number;
   topTags: TagCount[];
   mostNiche: ScoredTrack[];
   mostMainstream: ScoredTrack[];
