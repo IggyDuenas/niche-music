@@ -133,11 +133,17 @@ public reference data, held in memory for a day.
 
 ## Design
 
-The look is built around one piece of generated artwork: a grid of figures that
-stand still along the top and end up dancing by the bottom
+The look is built around one piece of generated artwork: a grid of figures
+dancing, gently at the top of the field and fully by the bottom
 (`src/components/FigureGrid.tsx`). Nothing is hand-drawn — each pose comes from
 the cell's own coordinates through `energyAt` and a handful of limb angles, so
-the grid can be any size and no two figures repeat. The values are
+the grid can be any size and no two figures repeat.
+
+Two things keep the field from filling up with motionless figures: `energyAt`
+puts a floor under every row, and `swing` lets the random part scale only the
+top two thirds of a limb's travel. Without the second one, a figure whose
+numbers all landed near zero would snap back to the rest pose however energetic
+its row was, leaving stragglers standing rigid in the middle of a dance. The values are
 deterministic rather than random, because a random pose would differ between
 the server and client renders and break hydration.
 

@@ -26,26 +26,51 @@ function tip(x: number, y: number, length: number, deg: number): [number, number
 }
 
 /**
- * Energy across the grid. The first couple of rows hold still and the rise
- * accelerates after that, so the top reads as a crowd standing and the bottom
- * as the same crowd mid-dance. A per-figure jitter keeps a row from looking
- * like one pose stamped ten times.
+ * Energy across the grid: the top of the field is calmer and the bottom is
+ * mid-dance. A per-figure jitter keeps a row from looking like one pose stamped
+ * across it.
  */
+
+/** How much of the grid stays near-calm before the rise begins. */
+const STILL_SHARE = 0.04;
+/**
+ * Nobody stands completely still. Without a floor the whole top of the field
+ * reads as a queue rather than a crowd, and on a tall grid that is a lot of
+ * motionless figures.
+ */
+const MIN_ENERGY = 0.32;
+
 function energyAt(row: number, col: number, rows: number): number {
-  if (rows <= 1) return 0;
+  if (rows <= 1) return MIN_ENERGY;
   const down = row / (rows - 1);
-  const ramp = Math.max(0, (down - 0.16) / 0.84) ** 1.25;
-  return Math.min(1, ramp * (0.72 + noise(row, col, 6) * 0.42));
+  // Below 1, so the rise starts immediately rather than staying flat early on.
+  const ramp = Math.max(0, (down - STILL_SHARE) / (1 - STILL_SHARE)) ** 0.85;
+  const jitter = 0.78 + noise(row, col, 6) * 0.44;
+  // The floor is jittered too, so the calm rows still vary against each other.
+  const floor = MIN_ENERGY * (0.7 + noise(row, col, 8) * 0.6);
+  return Math.min(1, Math.max(floor, ramp * jitter));
+}
+
+/**
+ * How far one limb travels from its resting angle.
+ *
+ * The random part never scales the whole swing, only the top two thirds of it.
+ * Multiplying the range by the raw value would let a figure whose numbers all
+ * landed near zero snap back to the rest pose however energetic its row is,
+ * which is what left scattered figures standing rigid in the middle of a dance.
+ */
+function swing(random: number, energy: number, range: number): number {
+  return (0.4 + 0.6 * random) * energy * range;
 }
 
 function Figure({ row, col, rows }: { row: number; col: number; rows: number }) {
   const energy = energyAt(row, col, rows);
 
   // Arms swing from hanging down all the way overhead; legs from together to a kick.
-  const leftArm = 108 + noise(row, col, 1) * energy * 172;
-  const rightArm = 72 - noise(row, col, 2) * energy * 172;
-  const leftLeg = 96 + noise(row, col, 3) * energy * 62;
-  const rightLeg = 84 - noise(row, col, 4) * energy * 62;
+  const leftArm = 108 + swing(noise(row, col, 1), energy, 172);
+  const rightArm = 72 - swing(noise(row, col, 2), energy, 172);
+  const leftLeg = 96 + swing(noise(row, col, 3), energy, 62);
+  const rightLeg = 84 - swing(noise(row, col, 4), energy, 62);
   const lean = (noise(row, col, 5) - 0.5) * energy * 26;
   const hop = -noise(row, col, 7) * energy * 1.8;
 
