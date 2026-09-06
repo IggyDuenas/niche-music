@@ -28,7 +28,7 @@ export function Stat({ value, label, hint }: { value: string; label: string; hin
   return (
     <div className="panel p-4">
       <p className="nums text-2xl font-bold">{value}</p>
-      <p className="mt-0.5 text-xs font-medium text-[var(--color-chalk)]">{label}</p>
+      <p className="mt-0.5 text-xs font-medium text-[var(--color-cream)]">{label}</p>
       {hint && <p className="mt-1 text-[11px] leading-snug text-[var(--color-muted)]">{hint}</p>}
     </div>
   );

@@ -15,15 +15,15 @@ export function ScoreDial({ score, percentile, label }: Props) {
            aria-label={`Niche score ${score} out of 100`}>
         <defs>
           <linearGradient id="dial" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="var(--color-hot)" />
-            <stop offset="55%" stopColor="#ffd166" />
-            <stop offset="100%" stopColor="var(--color-accent)" />
+            <stop offset="0%" stopColor="var(--color-terracotta-dim)" />
+            <stop offset="52%" stopColor="var(--color-terracotta)" />
+            <stop offset="100%" stopColor="var(--color-cream)" />
           </linearGradient>
         </defs>
         <path
           d="M 18 112 A 92 92 0 0 1 202 112"
           fill="none"
-          stroke="var(--color-edge)"
+          stroke="rgba(236,233,214,0.14)"
           strokeWidth="14"
           strokeLinecap="round"
         />
@@ -38,7 +38,7 @@ export function ScoreDial({ score, percentile, label }: Props) {
         />
         <text
           x="110" y="98" textAnchor="middle"
-          className="nums fill-[var(--color-chalk)] text-[46px] font-bold"
+          className="nums fill-[var(--color-cream)] text-[46px] font-bold"
         >
           {Math.round(score)}
         </text>

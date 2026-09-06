@@ -131,11 +131,26 @@ httpOnly session cookie; the Apple Music user token stays in the browser tab's
 `sessionStorage`. The only long-lived cache is artist listener counts, which is
 public reference data, held in memory for a day.
 
+## Design
+
+The look is built around one piece of generated artwork: a 10x10 grid of
+figures that stand still at the top and end up dancing at the bottom
+(`src/components/FigureGrid.tsx`). Nothing is hand-drawn — each pose comes from
+the cell's own coordinates through `energyAt` and a handful of limb angles, so
+the grid can be any size and no two figures repeat. The values are
+deterministic rather than random, because a random pose would differ between
+the server and client renders and break hydration.
+
+The landing page is laid out like an album page — artwork, title, artist line,
+meta line, then the buttons — over a warm oxblood ground with terracotta and
+cream. Motion is limited to a slow diagonal settle when the figures first
+appear, and it is disabled entirely under `prefers-reduced-motion`.
+
 ## Pages
 
 | Route | What it does |
 | --- | --- |
-| `/` | Headline, drifting clouds, the two connect boxes |
+| `/` | The cover artwork, the question, and the two connect buttons |
 | `/playlists` | Pick which playlist to score |
 | `/results` | The score, the breakdown, and the challenge link |
 | `/vs` | One card is an invitation; two cards is a head-to-head |

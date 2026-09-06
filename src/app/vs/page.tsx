@@ -2,7 +2,6 @@ import Link from "next/link";
 import { env } from "@/lib/env";
 import { readSession, type Session } from "@/lib/session";
 import { ConnectApple } from "@/components/ConnectApple";
-import { Sky } from "@/components/Sky";
 import { VersusCard } from "@/components/VersusCard";
 import { compare, decodeCard } from "@/lib/share";
 
@@ -21,7 +20,7 @@ export default async function VersusPage({
     return (
       <Shell>
         <div className="panel p-6 text-center">
-          <p className="text-sm text-[var(--color-hot)]">
+          <p className="text-sm text-[var(--color-gold)]">
             That comparison link is not readable. Ask for a fresh one.
           </p>
           <Link href="/" className="mt-4 inline-block text-sm underline">
@@ -64,7 +63,7 @@ export default async function VersusPage({
       <div className="mt-8 text-center">
         <Link
           href="/"
-          className="inline-block rounded-full bg-[var(--color-accent)] px-6 py-2.5 text-sm font-semibold text-black transition hover:brightness-110"
+          className="inline-block rounded-full bg-[var(--color-cream)] px-6 py-2.5 text-sm font-semibold text-[var(--color-ink)] transition hover:brightness-110"
         >
           Score one of your own
         </Link>
@@ -98,7 +97,7 @@ async function Invitation({ card, encoded }: { card: Awaited<ReturnType<typeof d
         {spotifyConnected ? (
           <Link
             href={`/playlists?source=spotify&vs=${challengeQuery}`}
-            className="panel flex flex-col items-center justify-center gap-2 px-6 py-6 text-center transition hover:border-[var(--color-accent)]"
+            className="panel flex flex-col items-center justify-center gap-2 px-6 py-6 text-center transition hover:border-[var(--color-terracotta)]"
           >
             <span className="text-sm font-semibold">Pick a Spotify playlist</span>
             <span className="text-xs text-[var(--color-muted)]">Already connected</span>
@@ -109,7 +108,7 @@ async function Invitation({ card, encoded }: { card: Awaited<ReturnType<typeof d
             aria-disabled={!env.spotify.configured}
             className={`panel flex flex-col items-center justify-center gap-2 px-6 py-6 text-center transition ${
               env.spotify.configured
-                ? "hover:border-[var(--color-accent)]"
+                ? "hover:border-[var(--color-terracotta)]"
                 : "pointer-events-none opacity-45"
             }`}
           >
@@ -129,7 +128,6 @@ async function Invitation({ card, encoded }: { card: Awaited<ReturnType<typeof d
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Sky />
       <main className="mx-auto max-w-3xl px-5 py-12">
         <Link href="/" className="text-xs text-[var(--color-muted)] underline underline-offset-2">
           ← Niche Music

@@ -6,9 +6,9 @@ function compact(value: number | undefined): string {
 }
 
 function scoreColor(score: number): string {
-  if (score >= 70) return "text-[var(--color-accent)]";
-  if (score >= 40) return "text-[#ffd166]";
-  return "text-[var(--color-hot)]";
+  if (score >= 70) return "text-[var(--color-cream)]";
+  if (score >= 40) return "text-[var(--color-gold)]";
+  return "text-[var(--color-muted)]";
 }
 
 export function TrackList({ tracks, emptyNote }: { tracks: ScoredTrack[]; emptyNote: string }) {
@@ -17,7 +17,7 @@ export function TrackList({ tracks, emptyNote }: { tracks: ScoredTrack[]; emptyN
   }
 
   return (
-    <ol className="divide-y divide-[var(--color-edge)]">
+    <ol className="divide-y divide-[rgba(236,233,214,0.1)]">
       {tracks.map((track, index) => (
         <li key={`${track.id}-${index}`} className="flex items-center gap-3 py-2.5">
           <span className="nums w-5 shrink-0 text-xs text-[var(--color-muted)]">{index + 1}</span>
@@ -26,7 +26,7 @@ export function TrackList({ tracks, emptyNote }: { tracks: ScoredTrack[]; emptyN
             // eslint-disable-next-line @next/next/no-img-element
             <img src={track.artworkUrl} alt="" className="h-9 w-9 shrink-0 rounded object-cover" />
           ) : (
-            <div className="h-9 w-9 shrink-0 rounded bg-[var(--color-panel-2)]" />
+            <div className="h-9 w-9 shrink-0 rounded bg-[rgba(236,233,214,0.06)]" />
           )}
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">{track.title}</p>

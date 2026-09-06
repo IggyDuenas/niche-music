@@ -14,14 +14,10 @@ export function VersusCard({
   outcome: "win" | "loss" | "tie" | null;
 }) {
   const border =
-    outcome === "win"
-      ? "border-[var(--color-accent)]"
-      : outcome === "loss"
-        ? "border-[var(--color-edge)]"
-        : "border-[var(--color-edge)]";
+    outcome === "win" ? "border-[var(--color-cream)]" : "border-[rgba(236,233,214,0.14)]";
 
   return (
-    <div className={`panel flex h-full flex-col border-2 p-6 ${border} ${outcome === "loss" ? "opacity-70" : ""}`}>
+    <div className={`panel flex h-full flex-col border-2 p-6 ${border}`}>
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-muted)]">
         {card.o}
       </p>
@@ -33,12 +29,12 @@ export function VersusCard({
         <span className="nums text-5xl font-bold">{Math.round(card.s)}</span>
         <span className="text-sm text-[var(--color-muted)]">/ 100</span>
         {outcome === "win" && (
-          <span className="ml-auto rounded-full bg-[var(--color-accent)] px-2.5 py-1 text-xs font-bold text-black">
+          <span className="ml-auto rounded-full bg-[var(--color-cream)] px-2.5 py-1 text-xs font-bold text-[var(--color-ink)]">
             Winner
           </span>
         )}
         {outcome === "tie" && (
-          <span className="ml-auto rounded-full border border-[var(--color-edge)] px-2.5 py-1 text-xs font-semibold">
+          <span className="ml-auto rounded-full border border-[rgba(236,233,214,0.2)] px-2.5 py-1 text-xs font-semibold">
             Tie
           </span>
         )}
@@ -46,7 +42,7 @@ export function VersusCard({
 
       <p className="mt-1 text-sm font-medium text-[var(--color-gold)]">{card.v}</p>
 
-      <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-[var(--color-edge)] pt-4 text-center">
+      <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-[rgba(236,233,214,0.12)] pt-4 text-center">
         <div>
           <dt className="text-[11px] text-[var(--color-muted)]">tracks</dt>
           <dd className="nums text-sm font-semibold">{card.t}</dd>
@@ -62,7 +58,7 @@ export function VersusCard({
       </dl>
 
       {card.h.length > 0 && (
-        <div className="mt-4 border-t border-[var(--color-edge)] pt-4">
+        <div className="mt-4 border-t border-[rgba(236,233,214,0.12)] pt-4">
           <p className="text-[11px] uppercase tracking-wider text-[var(--color-muted)]">
             Deepest cuts
           </p>
@@ -72,7 +68,7 @@ export function VersusCard({
                 <span className="min-w-0 truncate text-xs">
                   {title} <span className="text-[var(--color-muted)]">— {artist}</span>
                 </span>
-                <span className="nums shrink-0 text-xs text-[var(--color-accent)]">{score}</span>
+                <span className="nums shrink-0 text-xs text-[var(--color-cream)]">{score}</span>
               </li>
             ))}
           </ul>

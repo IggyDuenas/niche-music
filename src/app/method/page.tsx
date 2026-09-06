@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { env } from "@/lib/env";
 import { Panel } from "@/components/Panel";
-import { Sky } from "@/components/Sky";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +9,6 @@ export default function MethodPage() {
 
   return (
     <>
-      <Sky />
       <main className="mx-auto max-w-2xl px-5 py-12">
         <Link href="/" className="text-xs text-[var(--color-muted)] underline underline-offset-2">
           ← Niche Music
@@ -20,29 +18,29 @@ export default function MethodPage() {
         <Panel className="mt-6">
           <ol className="space-y-3 text-sm leading-relaxed text-[var(--color-muted)]">
             <li>
-              <span className="font-medium text-[var(--color-chalk)]">1. Read the playlist.</span>{" "}
+              <span className="font-medium text-[var(--color-cream)]">1. Read the playlist.</span>{" "}
               Only the playlist you picked, deduplicated, so the same song across four playlists
               counts once. Nothing is written back to your account.
             </li>
             <li>
-              <span className="font-medium text-[var(--color-chalk)]">2. Look up audience size.</span>{" "}
+              <span className="font-medium text-[var(--color-cream)]">2. Look up audience size.</span>{" "}
               Each track and artist is matched against {referenceSource}, which reports how many
               distinct people worldwide have played them.
             </li>
             <li>
-              <span className="font-medium text-[var(--color-chalk)]">3. Score on a log scale.</span>{" "}
+              <span className="font-medium text-[var(--color-cream)]">3. Score on a log scale.</span>{" "}
               A global hit has roughly a million times the audience of a bedroom producer, so raw
               counts would put everything at one end. Counts are compared as log10, then inverted:
               higher score means fewer listeners.
             </li>
             <li>
-              <span className="font-medium text-[var(--color-chalk)]">4. Blend.</span> 55% of a
+              <span className="font-medium text-[var(--color-cream)]">4. Blend.</span> 55% of a
               track&apos;s score comes from the recording, 45% from the artist&apos;s overall reach.
               A deep cut by a famous band is not as niche as the same play count from someone
               nobody has heard of.
             </li>
             <li>
-              <span className="font-medium text-[var(--color-chalk)]">5. Average.</span> The
+              <span className="font-medium text-[var(--color-cream)]">5. Average.</span> The
               playlist score is the mean across every track that matched. Tracks with no match are
               counted and reported, never guessed at.
             </li>

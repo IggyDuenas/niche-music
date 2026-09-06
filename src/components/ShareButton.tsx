@@ -37,12 +37,12 @@ export function ShareButton({ path, label }: { path: string; label: string }) {
           readOnly
           value={href}
           onFocus={(event) => event.currentTarget.select()}
-          className="min-w-0 flex-1 rounded-lg border border-[var(--color-edge)] bg-[var(--color-panel-2)] px-3 py-2 text-xs text-[var(--color-muted)] outline-none"
+          className="min-w-0 flex-1 rounded-lg border border-[rgba(236,233,214,0.14)] bg-[rgba(236,233,214,0.06)] px-3 py-2 text-xs text-[var(--color-muted)] outline-none"
         />
         <button
           type="button"
           onClick={copy}
-          className="shrink-0 rounded-lg bg-[var(--color-accent)] px-4 py-2 text-sm font-semibold text-black transition hover:brightness-110"
+          className="shrink-0 rounded-lg bg-[var(--color-cream)] px-4 py-2 text-sm font-semibold text-[var(--color-ink)] transition hover:brightness-110"
         >
           {copied ? "Copied" : "Copy link"}
         </button>

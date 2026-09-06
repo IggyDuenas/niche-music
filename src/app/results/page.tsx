@@ -7,7 +7,6 @@ import { Histogram } from "@/components/Histogram";
 import { Panel, Stat } from "@/components/Panel";
 import { ScoreDial } from "@/components/ScoreDial";
 import { ShareButton } from "@/components/ShareButton";
-import { Sky } from "@/components/Sky";
 import { TrackList } from "@/components/TrackList";
 import { encodeCard, type ShareCard } from "@/lib/share";
 import { storedAppleToken } from "@/lib/musickit";
@@ -85,7 +84,7 @@ function ResultsInner() {
     return (
       <Shell>
         <Panel>
-          <p className="text-sm text-[var(--color-hot)]">{error}</p>
+          <p className="text-sm text-[var(--color-gold)]">{error}</p>
           <Link href="/" className="mt-4 inline-block text-sm underline">
             Back to the start
           </Link>
@@ -99,7 +98,7 @@ function ResultsInner() {
       <Shell>
         <Panel>
           <div className="flex items-center gap-3">
-            <span className="h-3 w-3 animate-pulse rounded-full bg-[var(--color-accent)]" />
+            <span className="h-3 w-3 animate-pulse rounded-full bg-[var(--color-terracotta)]" />
             <p className="text-sm text-[var(--color-muted)]">{LOADING_STEPS[step]}</p>
           </div>
           <p className="mt-3 text-xs text-[var(--color-muted)]">
@@ -150,7 +149,7 @@ function ResultsInner() {
               {result.topTags.map((tag) => (
                 <span
                   key={tag.tag}
-                  className="rounded-full border border-[var(--color-edge)] px-3 py-1 text-xs"
+                  className="rounded-full border border-[rgba(236,233,214,0.14)] px-3 py-1 text-xs"
                   style={{ opacity: 0.55 + Math.min(0.45, tag.share / 100) }}
                 >
                   {tag.tag}
@@ -177,7 +176,7 @@ function ResultsInner() {
               {result.deepestArtists.map((artist) => (
                 <li
                   key={artist.artist}
-                  className="flex items-baseline justify-between gap-3 rounded-lg bg-[var(--color-panel-2)] px-3 py-2"
+                  className="flex items-baseline justify-between gap-3 rounded-lg bg-[rgba(236,233,214,0.06)] px-3 py-2"
                 >
                   <span className="truncate text-sm">{artist.artist}</span>
                   <span className="nums shrink-0 text-xs text-[var(--color-muted)]">
@@ -200,7 +199,7 @@ function ResultsInner() {
               </li>
             )}
             {warnings?.map((warning) => (
-              <li key={warning} className="text-[var(--color-hot)]">{warning}</li>
+              <li key={warning} className="text-[var(--color-gold)]">{warning}</li>
             ))}
           </ul>
         </Panel>
@@ -212,7 +211,6 @@ function ResultsInner() {
 function Shell({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <Sky />
       <main className="mx-auto max-w-5xl px-5 py-10">
         <div className="mb-6 flex items-center justify-between">
           <Link href="/playlists?source=spotify" className="text-xs text-[var(--color-muted)] underline underline-offset-2">

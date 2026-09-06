@@ -1,18 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-  /* A dusk sky: deep indigo at the top, warmer toward the horizon. */
-  --color-ink: #0a0a18;
-  --color-dusk: #171633;
-  --color-panel: #14142a;
-  --color-panel-2: #1c1b38;
-  --color-edge: #2b2a4d;
-  --color-muted: #9694bb;
-  --color-chalk: #f4f3ff;
-  --color-accent: #7cf5d5;
-  --color-accent-dim: #3fbfa2;
-  --color-hot: #ff7a9c;
-  --color-gold: #ffd479;
+  /* Warm oxblood room, terracotta artwork, cream ink. */
+  --color-ink: #350c0a;
+  --color-blood: #591714;
+  --color-panel: #571613;
+  --color-panel-2: #6a1e19;
+  --color-edge: #7d2a23;
+  --color-terracotta: #e04d38;
+  --color-terracotta-dim: #b73c2c;
+  --color-cream: #ece9d6;
+  --color-muted: #d5aaa2;
+  --color-gold: #e8b06a;
   --font-display: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
@@ -22,11 +21,11 @@ html {
 
 body {
   background:
-    radial-gradient(1100px 620px at 50% 105%, rgba(255, 212, 121, 0.1), transparent 62%),
-    radial-gradient(900px 520px at 12% -8%, rgba(124, 245, 213, 0.09), transparent 60%),
-    linear-gradient(180deg, var(--color-ink) 0%, var(--color-dusk) 58%, #201a3d 100%);
+    radial-gradient(1200px 700px at 50% -10%, rgba(224, 77, 56, 0.22), transparent 62%),
+    radial-gradient(900px 600px at 50% 108%, rgba(232, 176, 106, 0.08), transparent 60%),
+    linear-gradient(180deg, var(--color-blood) 0%, var(--color-ink) 55%, #2a0907 100%);
   background-attachment: fixed;
-  color: var(--color-chalk);
+  color: var(--color-cream);
   font-family: var(--font-display);
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
@@ -39,10 +38,10 @@ body {
  */
 @layer components {
   .panel {
-    background: color-mix(in srgb, var(--color-panel) 82%, transparent);
-    border: 1px solid var(--color-edge);
-    border-radius: 1rem;
-    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--color-panel) 62%, transparent);
+    border: 1px solid color-mix(in srgb, var(--color-cream) 12%, transparent);
+    border-radius: 1.25rem;
+    backdrop-filter: blur(16px);
   }
 }
 
@@ -52,31 +51,26 @@ body {
 }
 
 /*
- * Clouds drift across the full width. Each one gets a negative animation-delay
- * so the sky is already populated on first paint rather than filling up from
- * the left edge.
+ * The figures settle onto the artwork rather than appearing all at once — a
+ * slow stagger reads as calm where a single fade reads as a page load.
  */
-@keyframes drift {
+@keyframes settle {
   from {
-    transform: translate3d(-30vw, 0, 0);
+    opacity: 0;
+    transform: translateY(4px);
   }
   to {
-    transform: translate3d(130vw, 0, 0);
+    opacity: 1;
+    transform: none;
   }
 }
 
-.cloud {
-  position: absolute;
-  animation-name: drift;
-  animation-timing-function: linear;
-  animation-iteration-count: infinite;
-  will-change: transform;
+.figure {
+  animation: settle 620ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cloud {
+  .figure {
     animation: none;
-    /* Without the drift the clouds would all pile up off-screen left. */
-    transform: translate3d(20vw, 0, 0);
   }
 }
