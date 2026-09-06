@@ -1,4 +1,6 @@
 import type { ShareCard } from "@/lib/share";
+import { MiniSleeve } from "@/components/FigureGrid";
+import { colorwayFor } from "@/lib/colorways";
 
 function compact(value: number | null): string {
   if (value === null) return "—";
@@ -18,12 +20,23 @@ export function VersusCard({
 
   return (
     <div className={`panel flex h-full flex-col border-2 p-6 ${border}`}>
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-muted)]">
-        {card.o}
-      </p>
-      <h2 className="mt-1 truncate text-lg font-semibold" title={card.n}>
-        {card.n}
-      </h2>
+      <div className="flex items-center gap-3">
+        {/* Each playlist wears its own pressing, so two cards never look alike. */}
+        <MiniSleeve
+          art={colorwayFor(card.n).art}
+          ink={colorwayFor(card.n).artInk}
+          size={4}
+          className="h-14 w-14 shrink-0"
+        />
+        <div className="min-w-0">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--color-muted)]">
+            {card.o}
+          </p>
+          <h2 className="mt-0.5 truncate text-lg font-semibold" title={card.n}>
+            {card.n}
+          </h2>
+        </div>
+      </div>
 
       <div className="mt-5 flex items-baseline gap-2">
         <span className="nums text-5xl font-bold">{Math.round(card.s)}</span>

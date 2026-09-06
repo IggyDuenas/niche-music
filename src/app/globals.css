@@ -1,18 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  /* Warm oxblood room, terracotta artwork, cream ink. */
-  --color-ink: #350c0a;
-  --color-blood: #591714;
-  --color-panel: #571613;
-  --color-panel-2: #6a1e19;
-  --color-edge: #7d2a23;
-  --color-terracotta: #e04d38;
-  --color-terracotta-dim: #b73c2c;
+  /* Constant across every colourway. */
   --color-cream: #ece9d6;
-  --color-muted: #d5aaa2;
   --color-gold: #e8b06a;
   --font-display: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+
+  /* Colourway defaults. The Ground component overrides these per pressing. */
+  --color-ground: #4a1210;
+  --color-panel: #5c1a16;
+  --color-art: #e04d38;
+  --color-art-ink: #ece9d6;
+  --color-accent: #f2896f;
+  --color-accent-dim: #b73c2c;
+  --color-muted: #d5aaa2;
+  --color-ink: #2a0907;
 }
 
 html {
@@ -20,23 +22,20 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(1200px 700px at 50% -10%, rgba(224, 77, 56, 0.22), transparent 62%),
-    radial-gradient(900px 600px at 50% 108%, rgba(232, 176, 106, 0.08), transparent 60%),
-    linear-gradient(180deg, var(--color-blood) 0%, var(--color-ink) 55%, #2a0907 100%);
-  background-attachment: fixed;
+  /* The ground element paints the colour; this only stops white flashing behind it. */
+  background: #14100f;
   color: var(--color-cream);
   font-family: var(--font-display);
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
 }
 
-/*
- * Declared inside the components layer so Tailwind's utility layer still wins —
- * otherwise an unlayered rule here would beat every border-* utility applied to
- * a panel, and things like the winner's highlight border would silently vanish.
- */
 @layer components {
+  /*
+   * Declared inside the components layer so Tailwind's utility layer still wins —
+   * otherwise an unlayered rule here would beat every border-* utility applied to
+   * a panel, and things like the winner's highlight border would silently vanish.
+   */
   .panel {
     background: color-mix(in srgb, var(--color-panel) 62%, transparent);
     border: 1px solid color-mix(in srgb, var(--color-cream) 12%, transparent);
@@ -45,14 +44,55 @@ body {
   }
 }
 
+.ground {
+  position: relative;
+  /* Contains the fixed overlay below, so it cannot escape behind the page. */
+  isolation: isolate;
+  min-height: 100dvh;
+  background-color: var(--color-ground);
+}
+
+/*
+ * Depth without hue: a neutral highlight at the top and a vignette at the
+ * bottom sit over any colourway, so switching pressings never has to
+ * cross-fade a gradient — only the flat colour underneath changes.
+ */
+.ground::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  /* Behind the content: as a positioned element it would otherwise paint over
+     every static child and wash the whole page out. */
+  z-index: 0;
+  background:
+    radial-gradient(1100px 640px at 50% -8%, rgba(255, 255, 255, 0.1), transparent 62%),
+    radial-gradient(900px 560px at 50% 108%, rgba(0, 0, 0, 0.34), transparent 62%),
+    linear-gradient(180deg, transparent 30%, rgba(0, 0, 0, 0.28) 100%);
+}
+
+/*
+ * Custom properties do not animate, but the properties reading them do, so a
+ * colourway change eases rather than snaps.
+ */
+.cw-fade,
+.cw-fade * {
+  transition:
+    background-color 1100ms ease,
+    border-color 1100ms ease,
+    color 1100ms ease,
+    fill 1100ms ease,
+    stroke 1100ms ease;
+}
+
 /* Tabular figures keep changing numbers from jittering. */
 .nums {
   font-variant-numeric: tabular-nums;
 }
 
 /*
- * The figures settle onto the artwork rather than appearing all at once — a
- * slow stagger reads as calm where a single fade reads as a page load.
+ * The figures settle onto the sleeve rather than appearing all at once — a slow
+ * stagger reads as calm where a single fade reads as a page load.
  */
 @keyframes settle {
   from {
@@ -72,5 +112,10 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .figure {
     animation: none;
+  }
+
+  .cw-fade,
+  .cw-fade * {
+    transition: none;
   }
 }

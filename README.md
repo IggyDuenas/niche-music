@@ -142,9 +142,32 @@ deterministic rather than random, because a random pose would differ between
 the server and client renders and break hydration.
 
 The landing page is laid out like an album page — artwork, title, artist line,
-meta line, then the buttons — over a warm oxblood ground with terracotta and
-cream. Motion is limited to a slow diagonal settle when the figures first
-appear, and it is disabled entirely under `prefers-reduced-motion`.
+meta line, then the buttons. Motion is limited to a slow diagonal settle when
+the figures first appear, and it is disabled entirely under
+`prefers-reduced-motion`.
+
+### Colourways
+
+The sleeve is pressed in five colours — terracotta, leaf, cobalt, ochre and
+violet (`src/lib/colorways.ts`). Each is a complete set (ground, sleeve, ink,
+accent, muted) rather than one hue rotated, because the ink has to change with
+it: cream reads beautifully on the terracotta and the violet, and is
+unreadable on the ochre, which prints in dark brown instead.
+
+Which colourway you see depends on what is on screen:
+
+- **A page showing a specific playlist** uses that playlist's own colourway,
+  derived from a hash of its name. "house party" is always the same colour, on
+  your screen and on your friend's — which is why the comparison page shows two
+  visibly different sleeves.
+- **Every other page** opens on a random pressing and cycles slowly through the
+  rest, so the range is visible without a picker.
+
+`Ground` applies a colourway as CSS custom properties on a wrapper. Custom
+properties do not animate, but the properties reading them do, so the change
+eases rather than snaps — which is also why the page's depth shading is a
+neutral black-and-white overlay rather than a coloured gradient: a flat colour
+underneath can transition, a gradient cannot.
 
 ## Pages
 

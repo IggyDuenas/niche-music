@@ -1,14 +1,18 @@
 import Link from "next/link";
 import { env } from "@/lib/env";
+import { Ground } from "@/components/Ground";
 import { Panel } from "@/components/Panel";
+import { COLORWAYS } from "@/lib/colorways";
 
 export const dynamic = "force-dynamic";
 
 export default function MethodPage() {
   const referenceSource = env.lastfmApiKey ? "Last.fm" : "Deezer";
 
+  const opening = COLORWAYS[Math.floor(Math.random() * COLORWAYS.length)];
+
   return (
-    <>
+    <Ground colorway={opening} cycle>
       <main className="mx-auto max-w-2xl px-5 py-12">
         <Link href="/" className="text-xs text-[var(--color-muted)] underline underline-offset-2">
           ← Niche Music
@@ -70,6 +74,6 @@ export default function MethodPage() {
           </p>
         </Panel>
       </main>
-    </>
+    </Ground>
   );
 }

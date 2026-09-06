@@ -77,11 +77,13 @@ export function FigureGrid({
   cols = 10,
   className = "",
   animate = true,
+  style,
 }: {
   rows?: number;
   cols?: number;
   className?: string;
   animate?: boolean;
+  style?: React.CSSProperties;
 }) {
   const cells = [];
   for (let row = 0; row < rows; row++) {
@@ -104,6 +106,7 @@ export function FigureGrid({
     <svg
       viewBox={`-4 -4 ${cols * CELL_W + 8} ${rows * CELL_H + 8}`}
       className={className}
+      style={style}
       role="img"
       aria-label="A grid of figures, standing at the top and dancing at the bottom"
     >
@@ -112,13 +115,39 @@ export function FigureGrid({
   );
 }
 
-/** The artwork in its frame — the shape the whole design is built around. */
+/** The sleeve in its frame — the shape the whole design is built around. */
 export function CoverArt({ className = "" }: { className?: string }) {
   return (
     <div
-      className={`relative overflow-hidden rounded-[1.75rem] bg-[var(--color-terracotta)] p-4 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.65)] ${className}`}
+      className={`relative overflow-hidden rounded-[1.75rem] bg-[var(--color-art)] p-4 shadow-[0_30px_70px_-20px_rgba(0,0,0,0.65)] ${className}`}
     >
-      <FigureGrid rows={10} cols={10} className="w-full text-[var(--color-cream)]" />
+      <FigureGrid rows={10} cols={10} className="w-full text-[var(--color-art-ink)]" />
+    </div>
+  );
+}
+
+/**
+ * A small pressing of the same sleeve, for places showing more than one
+ * playlist at a time. Takes its colours explicitly so two of them can sit side
+ * by side in different colourways.
+ */
+export function MiniSleeve({
+  art,
+  ink,
+  size = 4,
+  className = "",
+}: {
+  art: string;
+  ink: string;
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`overflow-hidden rounded-lg p-1 ${className}`}
+      style={{ backgroundColor: art }}
+    >
+      <FigureGrid rows={size} cols={size} animate={false} className="h-full w-full" style={{ color: ink }} />
     </div>
   );
 }

@@ -8,6 +8,8 @@ import { Panel, Stat } from "@/components/Panel";
 import { ScoreDial } from "@/components/ScoreDial";
 import { ShareButton } from "@/components/ShareButton";
 import { TrackList } from "@/components/TrackList";
+import { Ground } from "@/components/Ground";
+import { colorwayFor } from "@/lib/colorways";
 import { encodeCard, type ShareCard } from "@/lib/share";
 import { storedAppleToken } from "@/lib/musickit";
 import type { AnalysisResult } from "@/lib/types";
@@ -82,7 +84,7 @@ function ResultsInner() {
 
   if (error) {
     return (
-      <Shell>
+      <Shell seed={playlistName}>
         <Panel>
           <p className="text-sm text-[var(--color-gold)]">{error}</p>
           <Link href="/" className="mt-4 inline-block text-sm underline">
@@ -95,10 +97,10 @@ function ResultsInner() {
 
   if (!payload) {
     return (
-      <Shell>
+      <Shell seed={playlistName}>
         <Panel>
           <div className="flex items-center gap-3">
-            <span className="h-3 w-3 animate-pulse rounded-full bg-[var(--color-terracotta)]" />
+            <span className="h-3 w-3 animate-pulse rounded-full bg-[var(--color-accent)]" />
             <p className="text-sm text-[var(--color-muted)]">{LOADING_STEPS[step]}</p>
           </div>
           <p className="mt-3 text-xs text-[var(--color-muted)]">
@@ -112,7 +114,7 @@ function ResultsInner() {
   const { result, warnings, label, card } = payload;
 
   return (
-    <Shell>
+    <Shell seed={playlistName}>
       <Panel className="!p-8">
         <p className="mb-4 text-center text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-muted)]">
           {label}
@@ -208,9 +210,11 @@ function ResultsInner() {
   );
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({ children, seed }: { children: React.ReactNode; seed: string }) {
   return (
-    <>
+    // A playlist keeps one colourway wherever it is shown, here and on a
+    // friend's comparison page.
+    <Ground colorway={colorwayFor(seed)}>
       <main className="mx-auto max-w-5xl px-5 py-10">
         <div className="mb-6 flex items-center justify-between">
           <Link href="/playlists?source=spotify" className="text-xs text-[var(--color-muted)] underline underline-offset-2">
@@ -222,7 +226,7 @@ function Shell({ children }: { children: React.ReactNode }) {
         </div>
         {children}
       </main>
-    </>
+    </Ground>
   );
 }
 

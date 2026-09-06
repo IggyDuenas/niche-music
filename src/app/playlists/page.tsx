@@ -3,6 +3,9 @@
 import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Ground } from "@/components/Ground";
+import { MiniSleeve } from "@/components/FigureGrid";
+import { colorwayFor, DEFAULT_COLORWAY } from "@/lib/colorways";
 import { authorizeApple, storedAppleToken } from "@/lib/musickit";
 import type { PlaylistSummary } from "@/lib/types";
 
@@ -69,7 +72,7 @@ function PlaylistsInner() {
   };
 
   return (
-    <>
+    <Ground colorway={DEFAULT_COLORWAY} cycle>
       <main className="mx-auto max-w-3xl px-5 py-12">
         <Link href="/" className="text-xs text-[var(--color-muted)] underline underline-offset-2">
           ← Start over
@@ -95,7 +98,7 @@ function PlaylistsInner() {
 
         {!error && playlists === null && (
           <p className="mt-8 flex items-center gap-3 text-sm text-[var(--color-muted)]">
-            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[var(--color-terracotta)]" />
+            <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-[var(--color-accent)]" />
             Loading your playlists…
           </p>
         )}
@@ -108,7 +111,7 @@ function PlaylistsInner() {
                 value={filter}
                 onChange={(event) => setFilter(event.target.value)}
                 placeholder="Search your playlists"
-                className="panel mt-6 w-full px-4 py-2.5 text-sm outline-none placeholder:text-[var(--color-muted)] focus:border-[var(--color-terracotta)]"
+                className="panel mt-6 w-full px-4 py-2.5 text-sm outline-none placeholder:text-[var(--color-muted)] focus:border-[var(--color-accent)]"
               />
             )}
 
@@ -118,15 +121,19 @@ function PlaylistsInner() {
                   <button
                     type="button"
                     onClick={() => choose(playlist)}
-                    className="panel flex w-full items-center gap-3 px-4 py-3 text-left transition hover:border-[var(--color-terracotta)] hover:bg-[rgba(236,233,214,0.06)]"
+                    className="panel flex w-full items-center gap-3 px-4 py-3 text-left transition hover:border-[var(--color-accent)] hover:bg-[rgba(236,233,214,0.06)]"
                   >
                     {playlist.imageUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={playlist.imageUrl} alt="" className="h-11 w-11 shrink-0 rounded object-cover" />
                     ) : (
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded bg-[rgba(236,233,214,0.06)] text-[var(--color-muted)]">
-                        ♪
-                      </div>
+                      // No cover of its own, so it gets the sleeve it will be pressed in.
+                      <MiniSleeve
+                        art={colorwayFor(playlist.name).art}
+                        ink={colorwayFor(playlist.name).artInk}
+                        size={3}
+                        className="h-11 w-11 shrink-0"
+                      />
                     )}
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">{playlist.name}</p>
@@ -147,7 +154,7 @@ function PlaylistsInner() {
           </>
         )}
       </main>
-    </>
+    </Ground>
   );
 }
 

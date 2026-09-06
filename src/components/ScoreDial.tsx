@@ -15,8 +15,8 @@ export function ScoreDial({ score, percentile, label }: Props) {
            aria-label={`Niche score ${score} out of 100`}>
         <defs>
           <linearGradient id="dial" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="var(--color-terracotta-dim)" />
-            <stop offset="52%" stopColor="var(--color-terracotta)" />
+            <stop offset="0%" stopColor="var(--color-accent-dim)" />
+            <stop offset="52%" stopColor="var(--color-accent)" />
             <stop offset="100%" stopColor="var(--color-cream)" />
           </linearGradient>
         </defs>

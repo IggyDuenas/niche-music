@@ -4,6 +4,8 @@ import { readSession, type Session } from "@/lib/session";
 import { ConnectApple } from "@/components/ConnectApple";
 import { VersusCard } from "@/components/VersusCard";
 import { compare, decodeCard } from "@/lib/share";
+import { Ground } from "@/components/Ground";
+import { colorwayFor, DEFAULT_COLORWAY } from "@/lib/colorways";
 
 export const dynamic = "force-dynamic";
 
@@ -39,7 +41,7 @@ export default async function VersusPage({
   const { winner, gap, tied } = compare(cardA, cardB);
 
   return (
-    <Shell>
+    <Shell seed={tied || winner === "a" ? cardA.n : cardB.n}>
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
           {tied
@@ -79,7 +81,7 @@ async function Invitation({ card, encoded }: { card: Awaited<ReturnType<typeof d
   const challengeQuery = encodeURIComponent(encoded);
 
   return (
-    <Shell>
+    <Shell seed={card.n}>
       <header className="mb-8 text-center">
         <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
           {card.o} thinks their taste is more niche than yours
@@ -97,7 +99,7 @@ async function Invitation({ card, encoded }: { card: Awaited<ReturnType<typeof d
         {spotifyConnected ? (
           <Link
             href={`/playlists?source=spotify&vs=${challengeQuery}`}
-            className="panel flex flex-col items-center justify-center gap-2 px-6 py-6 text-center transition hover:border-[var(--color-terracotta)]"
+            className="panel flex flex-col items-center justify-center gap-2 px-6 py-6 text-center transition hover:border-[var(--color-accent)]"
           >
             <span className="text-sm font-semibold">Pick a Spotify playlist</span>
             <span className="text-xs text-[var(--color-muted)]">Already connected</span>
@@ -108,7 +110,7 @@ async function Invitation({ card, encoded }: { card: Awaited<ReturnType<typeof d
             aria-disabled={!env.spotify.configured}
             className={`panel flex flex-col items-center justify-center gap-2 px-6 py-6 text-center transition ${
               env.spotify.configured
-                ? "hover:border-[var(--color-terracotta)]"
+                ? "hover:border-[var(--color-accent)]"
                 : "pointer-events-none opacity-45"
             }`}
           >
@@ -125,15 +127,15 @@ async function Invitation({ card, encoded }: { card: Awaited<ReturnType<typeof d
   );
 }
 
-function Shell({ children }: { children: React.ReactNode }) {
+function Shell({ children, seed }: { children: React.ReactNode; seed?: string }) {
   return (
-    <>
+    <Ground colorway={seed ? colorwayFor(seed) : DEFAULT_COLORWAY}>
       <main className="mx-auto max-w-3xl px-5 py-12">
         <Link href="/" className="text-xs text-[var(--color-muted)] underline underline-offset-2">
           ← Niche Music
         </Link>
         <div className="mt-8">{children}</div>
       </main>
-    </>
+    </Ground>
   );
 }

@@ -3,6 +3,8 @@ import { env } from "@/lib/env";
 import { readSession, type Session } from "@/lib/session";
 import { ConnectApple } from "@/components/ConnectApple";
 import { CoverArt } from "@/components/FigureGrid";
+import { Ground } from "@/components/Ground";
+import { COLORWAYS } from "@/lib/colorways";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +18,12 @@ export default async function Home({
   const spotifyConnected = Boolean(session.spotify);
   const referenceSource = env.lastfmApiKey ? "Last.fm" : "Deezer";
 
+  // Server-rendered, so the pick reaches the client in the payload rather than
+  // being recomputed — a random colourway here cannot desync hydration.
+  const opening = COLORWAYS[Math.floor(Math.random() * COLORWAYS.length)];
+
   return (
+    <Ground colorway={opening} cycle>
     <main className="mx-auto flex min-h-dvh max-w-lg flex-col items-center px-6 pb-16 pt-12 text-center sm:pt-20">
       <CoverArt className="w-full max-w-[340px]" />
 
@@ -26,12 +33,12 @@ export default async function Home({
       <p className="mt-2 text-lg font-medium text-[var(--color-muted)]">
         Spotify &amp; Apple Music
       </p>
-      <p className="mt-2 text-[13px] font-semibold tracking-wide text-[var(--color-terracotta)]">
+      <p className="mt-2 text-[13px] font-semibold tracking-wide text-[var(--color-accent)]">
         One playlist · Scored on {referenceSource}
       </p>
 
       {error && (
-        <p className="mt-6 w-full rounded-2xl border border-[var(--color-terracotta)]/45 bg-[var(--color-terracotta)]/12 px-4 py-3 text-sm">
+        <p className="mt-6 w-full rounded-2xl border border-[var(--color-accent)]/45 bg-[var(--color-accent)]/12 px-4 py-3 text-sm">
           {error}
         </p>
       )}
@@ -80,6 +87,7 @@ export default async function Home({
         </Link>
       </div>
     </main>
+    </Ground>
   );
 }
 

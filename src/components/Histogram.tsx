@@ -13,7 +13,7 @@ export function Histogram({ data }: Props) {
               {bin.count}
             </span>
             <div
-              className="w-full rounded-t bg-gradient-to-t from-[var(--color-terracotta-dim)] to-[var(--color-terracotta)] transition-all"
+              className="w-full rounded-t bg-gradient-to-t from-[var(--color-accent-dim)] to-[var(--color-accent)] transition-all"
               style={{ height: `${Math.max(2, (bin.count / max) * 100)}%` }}
               title={`${bin.count} tracks scored ${bin.bucket}`}
             />
