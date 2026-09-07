@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 // The source is TypeScript; Node 22 strips types natively for plain .ts files.
-const { obscurityFromListeners, scoreTrack, percentileForScore, distribution, median, analyze } =
+const { obscurityFromListeners, scoreTrack, percentileForScore, distribution, median, analyze, verdictForScore } =
   await import("../src/lib/score.ts");
 const { normalizeTitle, normalizeArtist, trackKey } = await import(
   "../src/lib/reference/normalize.ts"
@@ -118,4 +118,14 @@ test("dedupe keys ignore decoration differences", () => {
     trackKey("Radiohead", "Weird Fishes - 2016 Remaster"),
     trackKey("Radiohead", "Weird Fishes"),
   );
+});
+
+test("verdicts are written for a general audience", () => {
+  const jargon = /deep cut|crate digger|long tail|chart-adjacent|certified/i;
+  for (let score = 0; score <= 100; score += 4) {
+    const { label, blurb } = verdictForScore(score);
+    assert.ok(label.length > 0 && blurb.length > 0, `score ${score} has no verdict`);
+    assert.ok(!jargon.test(label), `"${label}" reads as jargon`);
+    assert.ok(!jargon.test(blurb), `blurb for ${score} reads as jargon`);
+  }
 });

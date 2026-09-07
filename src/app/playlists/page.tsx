@@ -16,7 +16,7 @@ function pseudoPlaylists(source: string): PlaylistSummary[] {
   }
   return [
     { id: "liked", name: "Liked songs", trackCount: null, provider: "spotify" },
-    { id: "", name: "Everything (liked + top + playlists)", trackCount: null, provider: "spotify" },
+    { id: "", name: "Everything I listen to", trackCount: null, provider: "spotify" },
   ];
 }
 
@@ -84,7 +84,7 @@ function PlaylistsInner() {
         <p className="mt-2 text-sm text-[var(--color-muted)]">
           {challenge
             ? "Choose the one you want to put up against theirs."
-            : "Score one playlist at a time — that is what makes a fair head-to-head."}
+            : "One playlist at a time — that is what makes a fair comparison."}
         </p>
 
         {source === "apple" && !challenge && (
@@ -147,7 +147,7 @@ function PlaylistsInner() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-medium">{playlist.name}</p>
                       <p className="nums text-xs text-[var(--color-muted)]">
-                        {playlist.trackCount === null ? "Tap to score" : `${playlist.trackCount} tracks`}
+                        {playlist.trackCount === null ? "Tap to score" : `${playlist.trackCount} songs`}
                       </p>
                     </div>
                   </button>

@@ -37,7 +37,7 @@ export default async function Home({
           How niche is your music?
         </h1>
         <p className="mt-4 text-[15px] leading-relaxed text-[var(--color-cream)]/85">
-          Pick a playlist and find out how many people on earth actually listen to it.
+          Pick a playlist and find out how many people actually listen to the songs in it.
         </p>
 
         {error && (
@@ -78,7 +78,8 @@ export default async function Home({
         )}
 
         <p className="mt-9 text-xs leading-relaxed text-[var(--color-cream)]/70">
-          Scored on {referenceSource} listener counts. Nothing is stored on a server.{" "}
+          We check every song against {referenceSource}, which counts how many people play it.
+          Nothing is saved on a server.{" "}
           <Link href="/method" className="text-[var(--color-cream)] underline underline-offset-4">
             How it works
           </Link>

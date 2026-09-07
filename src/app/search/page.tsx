@@ -17,9 +17,9 @@ function compact(value: number | undefined): string {
 
 function verdictFor(score: number): string {
   if (score >= 80) return "Almost nobody plays this";
-  if (score >= 65) return "A genuine deep cut";
-  if (score >= 45) return "Known, but not widely";
-  if (score >= 25) return "Plenty of company";
+  if (score >= 65) return "Hardly anyone plays this";
+  if (score >= 45) return "Some people know this";
+  if (score >= 25) return "Plenty of people play this";
   return "Everybody knows this one";
 }
 
@@ -99,8 +99,8 @@ function SearchInner() {
 
         <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl">Score any song</h1>
         <p className="mt-2 text-sm text-[var(--color-muted)]">
-          Search the Apple Music catalogue and see how many people actually play it — no need to
-          own it.
+          Search Apple Music and see how many people actually play a song. You don&apos;t need to own
+          it.
         </p>
 
         {!connected ? (
@@ -189,7 +189,7 @@ function Result({ track }: { track: ScoredTrack }) {
             </p>
           </>
         ) : (
-          <p className="text-[11px] text-[var(--color-muted)]">No data</p>
+          <p className="text-[11px] text-[var(--color-muted)]">Couldn&apos;t find it</p>
         )}
       </div>
     </div>

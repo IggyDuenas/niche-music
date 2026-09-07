@@ -43,13 +43,16 @@ export function ScoreDial({ score, percentile, label }: Props) {
           {Math.round(score)}
         </text>
         <text x="110" y="120" textAnchor="middle" className="fill-[var(--color-muted)] text-[11px]">
-          niche score / 100
+          out of 100
         </text>
       </svg>
 
-      <p className="mt-3 text-2xl font-semibold tracking-tight">{label}</p>
+      {/* Verdicts are plain sentences now, so they need room to wrap. */}
+      <p className="mt-3 max-w-xs text-balance text-center text-2xl font-semibold leading-tight tracking-tight">
+        {label}
+      </p>
       <p className="nums mt-1 text-sm text-[var(--color-muted)]">
-        More obscure than about {percentile}% of listeners
+        Rarer than about {percentile}% of people&apos;s music
       </p>
     </div>
   );

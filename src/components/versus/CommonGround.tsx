@@ -22,8 +22,8 @@ export function CommonGround({
         </h3>
         {nothingShared ? (
           <p className="mt-2 text-sm text-[var(--color-muted)]">
-            Nothing in common — no shared genres, no shared artists. You are listening to two
-            different worlds.
+            Nothing in common — no shared genres, no shared artists. You two are listening to
+            completely different music.
           </p>
         ) : (
           <div className="mt-2 space-y-2">

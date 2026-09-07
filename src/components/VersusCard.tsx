@@ -53,19 +53,19 @@ export function VersusCard({
         )}
       </div>
 
-      <p className="mt-1 text-sm font-medium text-[var(--color-gold)]">{card.v}</p>
+      <p className="mt-1 text-sm font-medium leading-snug text-[var(--color-gold)]">{card.v}</p>
 
       <dl className="mt-5 grid grid-cols-3 gap-3 border-t border-[rgba(236,233,214,0.12)] pt-4 text-center">
         <div>
-          <dt className="text-[11px] text-[var(--color-muted)]">tracks</dt>
+          <dt className="text-[11px] text-[var(--color-muted)]">songs</dt>
           <dd className="nums text-sm font-semibold">{card.t}</dd>
         </div>
         <div>
-          <dt className="text-[11px] text-[var(--color-muted)]">deep cuts</dt>
+          <dt className="text-[11px] text-[var(--color-muted)]">rare</dt>
           <dd className="nums text-sm font-semibold">{card.d}%</dd>
         </div>
         <div>
-          <dt className="text-[11px] text-[var(--color-muted)]">median plays</dt>
+          <dt className="text-[11px] text-[var(--color-muted)]">typical plays</dt>
           <dd className="nums text-sm font-semibold">{compact(card.m)}</dd>
         </div>
       </dl>
@@ -73,7 +73,7 @@ export function VersusCard({
       {card.h.length > 0 && (
         <div className="mt-4 border-t border-[rgba(236,233,214,0.12)] pt-4">
           <p className="text-[11px] uppercase tracking-wider text-[var(--color-muted)]">
-            Deepest cuts
+            Rarest songs
           </p>
           <ul className="mt-2 space-y-1.5">
             {card.h.map(([title, artist, score], index) => (

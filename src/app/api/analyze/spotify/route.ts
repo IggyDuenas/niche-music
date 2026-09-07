@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     if (tracks.length === 0) {
       return NextResponse.json(
-        { error: `No tracks found in "${label}".`, warnings },
+        { error: `No songs found in "${label}".`, warnings },
         { status: 422 },
       );
     }

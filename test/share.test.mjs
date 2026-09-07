@@ -216,3 +216,25 @@ test("an empty distribution does not divide by zero", () => {
   const shares = distributionShares({ ...full, db: new Array(10).fill(0) });
   assert.deepEqual(shares, new Array(10).fill(0));
 });
+
+test("rows won by the smaller number say what smaller means", () => {
+  const list = rounds(full, { ...full, s: 10 });
+  for (const round of list.filter((r) => r.lowerWins)) {
+    assert.ok(
+      (round.lowerNote ?? "lower is rarer").length > 0,
+      `${round.key} needs a note explaining what a lower number means`,
+    );
+  }
+  // Spread is the one where "lower" means steadier rather than rarer.
+  const consistency = list.find((r) => r.key === "commitment");
+  assert.equal(consistency.lowerNote, "lower is steadier");
+  assert.equal(list.find((r) => r.key === "audience").lowerNote, undefined);
+});
+
+test("no round label leans on insider vocabulary", () => {
+  const jargon = /deep cut|crate|long tail|percentile|log scale|median|obscurity/i;
+  for (const round of rounds(full, full)) {
+    assert.ok(!jargon.test(round.label), `"${round.label}" reads as jargon`);
+    assert.ok(!jargon.test(round.hint), `hint for ${round.key} reads as jargon: ${round.hint}`);
+  }
+});

@@ -23,9 +23,9 @@ const ARTIST_BOUNDS = { lo: 2.0, hi: 6.8 }; // ~100 listeners .. ~6.3M listeners
 const TRACK_WEIGHT = 0.55;
 const ARTIST_WEIGHT = 0.45;
 
-/** A track scoring above this is a "deep cut"; below MAINSTREAM_AT it's a hit. */
-export const DEEP_CUT_AT = 70;
-export const MAINSTREAM_AT = 30;
+/** Above this a song counts as rare; below POPULAR_AT it counts as a big hit. */
+export const RARE_AT = 70;
+export const POPULAR_AT = 30;
 
 /**
  * Maps a listener count onto 0-100, where 100 means almost nobody listens.
@@ -105,13 +105,13 @@ export function percentileForScore(score: number): number {
 }
 
 const VERDICTS: { min: number; label: string; blurb: string }[] = [
-  { min: 72, label: "Off the map", blurb: "Most of your library has fewer listeners than a mid-sized group chat. Either you dig very deep or half of this is unreleased." },
-  { min: 60, label: "Genuinely obscure", blurb: "You live in the long tail. The average person has not heard of the average artist here." },
-  { min: 48, label: "Crate digger", blurb: "Plenty of small artists, a few names people would recognise. You find things before they get big." },
-  { min: 36, label: "Off the beaten path", blurb: "You've wandered off the algorithm's main road but you still come back for the hits." },
-  { min: 24, label: "Comfortably curious", blurb: "A solid mainstream base with real excursions. This is what most people who think they're niche actually score." },
-  { min: 12, label: "Chart-adjacent", blurb: "You mostly listen to what a lot of other people are also listening to, with the odd detour." },
-  { min: 0, label: "Certified popular", blurb: "This is the radio. Nothing wrong with the radio — millions of people agree with you." },
+  { min: 72, label: "Almost nobody listens to this", blurb: "Most of these songs have fewer listeners than a big group chat. Either you look very hard for music, or half of this isn't properly released." },
+  { min: 60, label: "Way under the radar", blurb: "Most people have never heard of most of these artists." },
+  { min: 48, label: "You find music early", blurb: "Lots of small artists, a few names people would know. You tend to get there before everyone else." },
+  { min: 36, label: "A little off the beaten path", blurb: "You wander away from what everyone else is playing, but you still come back for the big songs." },
+  { min: 24, label: "Popular, with some surprises", blurb: "Mostly well-known music with some real finds mixed in. This is what most people who think they have unusual taste actually score." },
+  { min: 12, label: "Mostly well-known", blurb: "You mostly listen to what a lot of other people are also listening to, with the odd detour." },
+  { min: 0, label: "Very popular music", blurb: "This is the radio. Nothing wrong with the radio — millions of people agree with you." },
 ];
 
 export function verdictForScore(score: number): { label: string; blurb: string } {
@@ -240,10 +240,10 @@ export function analyze(
       matched.map((t) => t.stats.artistListeners).filter((v): v is number => v !== undefined),
     ),
     deepCutShare: matched.length
-      ? round((matched.filter((t) => t.nicheScore >= DEEP_CUT_AT).length / matched.length) * 100)
+      ? round((matched.filter((t) => t.nicheScore >= RARE_AT).length / matched.length) * 100)
       : 0,
     mainstreamShare: matched.length
-      ? round((matched.filter((t) => t.nicheScore < MAINSTREAM_AT).length / matched.length) * 100)
+      ? round((matched.filter((t) => t.nicheScore < POPULAR_AT).length / matched.length) * 100)
       : 0,
     rarestFind: ranked.length ? ranked[0].nicheScore : 0,
     artistCount: distinctArtists,

@@ -55,7 +55,7 @@ export default async function VersusPage({
         <p className="mt-2 text-sm text-[var(--color-muted)]">
           {tied
             ? "Level on overall score."
-            : `By ${gap} points on overall obscurity.`}{" "}
+            : `By ${gap} points overall.`}{" "}
           {roundsWon.a === roundsWon.b
             ? `The seven rounds split ${roundsWon.a}-${roundsWon.b}.`
             : `${roundsWon.a > roundsWon.b ? cardA.o : cardB.o} took ${Math.max(roundsWon.a, roundsWon.b)} of the seven rounds.`}
@@ -69,7 +69,7 @@ export default async function VersusPage({
 
       <Panel
         title="Round by round"
-        hint="Seven ways of asking the same question — one mean score hides a lot."
+        hint="Seven different ways of asking the same question, because one average hides a lot."
         className="mt-4"
       >
         <Rounds rounds={result.rounds} nameA={cardA.n} nameB={cardB.n} />
@@ -77,8 +77,8 @@ export default async function VersusPage({
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
         <Panel
-          title="Shape of each playlist"
-          hint="Share of each playlist scoring in each band, so length does not decide it."
+          title="How each playlist breaks down"
+          hint="Shown as a percentage of each playlist, so a longer playlist does not just look bigger."
         >
           <DistributionOverlay
             a={distributionShares(cardA)}

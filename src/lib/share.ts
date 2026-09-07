@@ -188,8 +188,14 @@ export type Round = {
   a: number;
   b: number;
   winner: "a" | "b" | null;
-  /** True where a smaller number is the more obscure result. */
+  /** True where a smaller number wins the round. */
   lowerWins: boolean;
+  /**
+   * What a smaller number means on this row. "Rarer" is right for audience size
+   * and hit count, but a low spread means steadier, not rarer — one generic
+   * note across all three rows would say something untrue about this one.
+   */
+  lowerNote?: string;
   /** How to render the values. */
   unit: "score" | "percent" | "count" | "listeners";
 };
@@ -211,16 +217,16 @@ function judge(round: Omit<Round, "winner">): Round {
 }
 
 /**
- * Seven ways of asking the same question, because one mean score hides a lot:
- * a playlist can score well on a single unheard-of track, or by being uniformly
- * obscure, and those are different kinds of taste.
+ * Seven ways of asking the same question, because one average hides a lot: a
+ * playlist can score well on a single unheard-of song, or by being rare the
+ * whole way through, and those are different kinds of taste.
  */
 export function rounds(a: ShareCard, b: ShareCard): Round[] {
   return [
     judge({
       key: "overall",
-      label: "Overall obscurity",
-      hint: "Mean niche score across every scored track.",
+      label: "How rare overall",
+      hint: "The average score across every song we could look up.",
       a: a.s,
       b: b.s,
       lowerWins: false,
@@ -228,8 +234,8 @@ export function rounds(a: ShareCard, b: ShareCard): Round[] {
     }),
     judge({
       key: "deep",
-      label: "Deep cuts",
-      hint: "Share of tracks almost nobody else plays.",
+      label: "Rare songs",
+      hint: "How much of the playlist almost nobody else plays.",
       a: a.d,
       b: b.d,
       lowerWins: false,
@@ -237,8 +243,8 @@ export function rounds(a: ShareCard, b: ShareCard): Round[] {
     }),
     judge({
       key: "rarest",
-      label: "Rarest single find",
-      hint: "The most obscure track in the playlist.",
+      label: "Rarest single song",
+      hint: "The least-played song in the whole playlist.",
       a: a.rf,
       b: b.rf,
       lowerWins: false,
@@ -246,8 +252,8 @@ export function rounds(a: ShareCard, b: ShareCard): Round[] {
     }),
     judge({
       key: "audience",
-      label: "Median audience",
-      hint: "Listeners for the typical track.",
+      label: "Typical listener count",
+      hint: "How many people play the middle-of-the-road song here.",
       a: a.m ?? 0,
       b: b.m ?? 0,
       lowerWins: true,
@@ -255,8 +261,8 @@ export function rounds(a: ShareCard, b: ShareCard): Round[] {
     }),
     judge({
       key: "hits",
-      label: "Chart hits",
-      hint: "Share of tracks with a very large audience.",
+      label: "Big hits",
+      hint: "How much of the playlist is music millions of people play.",
       a: a.ms,
       b: b.ms,
       lowerWins: true,
@@ -264,8 +270,8 @@ export function rounds(a: ShareCard, b: ShareCard): Round[] {
     }),
     judge({
       key: "variety",
-      label: "Artist variety",
-      hint: "Distinct artists per track. High means little repetition.",
+      label: "Different artists",
+      hint: "How many different artists there are. High means you are not repeating the same few.",
       a: a.ab,
       b: b.ab,
       lowerWins: false,
@@ -273,11 +279,12 @@ export function rounds(a: ShareCard, b: ShareCard): Round[] {
     }),
     judge({
       key: "commitment",
-      label: "Commitment",
-      hint: "Spread of the scores. A low spread means no hits propping up the average.",
+      label: "How consistent",
+      hint: "Whether the whole playlist is rare, or just a couple of songs pulling the average up.",
       a: a.sp,
       b: b.sp,
       lowerWins: true,
+      lowerNote: "lower is steadier",
       unit: "score",
     }),
   ];

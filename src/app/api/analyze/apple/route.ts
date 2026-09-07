@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (tracks.length === 0) {
-      return NextResponse.json({ error: `No tracks found in "${label}".`, warnings }, { status: 422 });
+      return NextResponse.json({ error: `No songs found in "${label}".`, warnings }, { status: 422 });
     }
 
     const { result } = await runAnalysis(tracks, "apple");

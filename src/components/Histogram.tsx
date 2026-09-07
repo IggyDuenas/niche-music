@@ -1,6 +1,6 @@
 type Props = { data: { bucket: string; count: number }[] };
 
-/** Distribution of per-track scores — shows whether a library is split or even. */
+/** How the songs' scores are spread out — one big clump, or split at both ends. */
 export function Histogram({ data }: Props) {
   const max = Math.max(1, ...data.map((d) => d.count));
 
@@ -15,14 +15,14 @@ export function Histogram({ data }: Props) {
             <div
               className="w-full rounded-t bg-gradient-to-t from-[var(--color-accent-dim)] to-[var(--color-accent)] transition-all"
               style={{ height: `${Math.max(2, (bin.count / max) * 100)}%` }}
-              title={`${bin.count} tracks scored ${bin.bucket}`}
+              title={`${bin.count} songs scored ${bin.bucket}`}
             />
           </div>
         ))}
       </div>
       <div className="mt-2 flex justify-between text-[11px] text-[var(--color-muted)]">
-        <span>← chart hits</span>
-        <span>deep cuts →</span>
+        <span>← popular songs</span>
+        <span>rare songs →</span>
       </div>
     </div>
   );

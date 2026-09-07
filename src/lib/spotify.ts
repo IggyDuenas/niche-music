@@ -230,12 +230,12 @@ export async function fetchLibrary(
         ...(await paginate(
           client,
           [`/me/top/tracks?limit=50&time_range=${range}`],
-          range === "long_term" ? "Top tracks (all time)" : "Top tracks (6 months)",
+          range === "long_term" ? "Most played, all time" : "Most played, last 6 months",
           Math.min(budget(), 50),
         )),
       );
     } catch {
-      warnings.push(`Could not read your ${range.replace("_", " ")} top tracks.`);
+      warnings.push("Could not read your most-played songs.");
     }
   }
 

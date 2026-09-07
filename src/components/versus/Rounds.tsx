@@ -41,7 +41,7 @@ function Row({ round }: { round: Round }) {
            */}
           {round.lowerWins && (
             <span className="rounded-full border border-[rgba(236,233,214,0.24)] px-1.5 py-px text-[10px] font-semibold uppercase tracking-wide text-[var(--color-muted)]">
-              ↓ lower wins
+              ↓ {round.lowerNote ?? "lower is rarer"}
             </span>
           )}
         </span>

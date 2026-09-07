@@ -18,9 +18,9 @@ type Payload = { result: AnalysisResult; warnings?: string[]; label: string; car
 
 const LOADING_STEPS = [
   "Reading the playlist…",
-  "Matching tracks against listening data…",
+  "Looking up how many people play each song…",
   "Counting how many people share your taste…",
-  "Almost there — scoring the long tail…",
+  "Almost there — scoring the rarest ones…",
 ];
 
 function compact(value: number | null | undefined): string {
@@ -104,7 +104,7 @@ function ResultsInner() {
             <p className="text-sm text-[var(--color-muted)]">{LOADING_STEPS[step]}</p>
           </div>
           <p className="mt-3 text-xs text-[var(--color-muted)]">
-            Scoring “{playlistName}” — every track is a separate lookup, so this takes a moment.
+            Scoring “{playlistName}” — every song is looked up one by one, so this takes a moment.
           </p>
         </Panel>
       </Shell>
@@ -130,18 +130,18 @@ function ResultsInner() {
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat value={`${result.matchedTracks}`} label="tracks scored" hint={`of ${result.totalTracks} unique tracks`} />
-        <Stat value={compact(result.medianTrackListeners)} label="median listeners" hint="for the typical song here" />
-        <Stat value={`${result.deepCutShare}%`} label="deep cuts" hint="tracks almost nobody plays" />
-        <Stat value={`${result.mainstreamShare}%`} label="certified hits" hint="tracks with a huge audience" />
+        <Stat value={`${result.matchedTracks}`} label="songs checked" hint={`of ${result.totalTracks} different songs`} />
+        <Stat value={compact(result.medianTrackListeners)} label="typical listeners" hint="for a middle-of-the-road song here" />
+        <Stat value={`${result.deepCutShare}%`} label="rare songs" hint="almost nobody else plays these" />
+        <Stat value={`${result.mainstreamShare}%`} label="big hits" hint="millions of people play these" />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-2">
-        <Panel title="Spread of this playlist" hint="Each bar is a band of niche scores.">
+        <Panel title="How your songs break down" hint="Taller bars mean more of your songs scored in that range.">
           <Histogram data={result.distribution} />
         </Panel>
 
-        <Panel title="Genres" hint="Counted once per artist, so one favourite can't skew it.">
+        <Panel title="Genres" hint="Counted once per artist, so one favourite band can't take over.">
           {result.topTags.length === 0 ? (
             <p className="text-sm text-[var(--color-muted)]">
               No genre tags available from this data source.
@@ -162,11 +162,11 @@ function ResultsInner() {
           )}
         </Panel>
 
-        <Panel title="Deepest cuts" hint="The least-listened-to things in here.">
+        <Panel title="Your rarest songs" hint="The least-played songs in this playlist.">
           <TrackList tracks={result.mostNiche} emptyNote="Nothing matched the reference data." />
         </Panel>
 
-        <Panel title="Most mainstream picks" hint="No judgement.">
+        <Panel title="Your most popular songs" hint="No judgement.">
           <TrackList tracks={result.mostMainstream} emptyNote="Nothing matched the reference data." />
         </Panel>
 
@@ -196,8 +196,8 @@ function ResultsInner() {
           <ul className="space-y-1 text-sm text-[var(--color-muted)]">
             {result.totalTracks > result.matchedTracks && (
               <li>
-                {result.totalTracks - result.matchedTracks} tracks had no match in the reference
-                data and were left out of the score.
+                {result.totalTracks - result.matchedTracks} songs could not be found in the listening
+                data, so they were left out of the score.
               </li>
             )}
             {warnings?.map((warning) => (

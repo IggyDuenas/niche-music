@@ -116,19 +116,31 @@ Your friend opens it, sees your card, connects their own account, picks one of
 their playlists, and lands on `/vs?a=…&b=…`.
 
 The head-to-head is decided on overall score but broken out over **seven
-rounds** — overall obscurity, deep cuts, rarest single find, median audience,
-chart hits, artist variety, and commitment — because one mean score hides a
-lot. A playlist can score well on a single unheard-of track or by being
-uniformly obscure, and those are different kinds of taste; commitment (the
-spread of the scores) is what separates them. Three of the rounds are won by
-the *lower* number, and those rows say so outright: the bars are honest
+rounds** — how rare overall, rare songs, rarest single song, typical listener
+count, big hits, different artists, and how consistent — because one average
+hides a lot. A playlist can score well on a single unheard-of song or by being
+rare the whole way through, and those are different kinds of taste;
+consistency (the spread of the scores) is what separates them. Three rounds are
+won by the *lower* number, and those rows say so outright: the bars are honest
 magnitudes, so without a marker "longer is better" would quietly misread half
-the table.
+the table. Each of those rows carries its own note, because a low spread means
+*steadier*, not rarer — one generic note would say something untrue about that
+row.
 
-Below that, both playlists' distributions are overlaid as **shares of each
-playlist** rather than track counts — plotting counts would only show which
+Below that, both playlists' distributions are overlaid as **percentages of each
+playlist** rather than song counts — plotting counts would only show which
 playlist is longer — and a common-ground panel lists the genres and artists
 they share against the ones only one side has.
+
+## Wording
+
+The interface is written for someone who does not follow music writing. There
+are no deep cuts, no crate diggers, no long tail, no medians, no percentiles and
+no log scales in anything a visitor reads — "songs" rather than "tracks",
+"rare" rather than "obscure", and the score explanation on `/method` describes
+the log scale in words instead of naming it. Two tests keep it that way by
+failing on a list of insider vocabulary in the verdicts and the round labels.
+The internals still use the precise terms; only the copy changed.
 
 A full card is around 450 characters encoded, so a two-card comparison URL runs
 under 1000 and still pastes anywhere. Every list in the card is capped for that
